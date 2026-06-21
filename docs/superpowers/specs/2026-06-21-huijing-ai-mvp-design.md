@@ -61,6 +61,8 @@ Auth/Postgres/       Seedream 4.5
 Private Storage
 ```
 
+真实模式通过 Supabase 的 transaction pooler 连接执行 `private` schema 中的事务函数，避免把 `security definer` 函数暴露到 Data API。
+
 推荐目录：
 
 ```text
@@ -152,6 +154,8 @@ tests/
 ## 5. 视觉系统
 
 视觉基准为“象牙编辑室”：
+
+参考图：`docs/superpowers/specs/assets/huijing-ai-ivory-editorial-reference.png`
 
 - 暖白与象牙色背景；
 - 大量留白和编辑式信息层级；
@@ -256,7 +260,7 @@ updated_at timestamptz
 - `generation_requests`：默认不从浏览器直接访问；
 - 积分变化、请求预留、成功结算和失败退款由受控数据库函数执行；
 - 权限判断不使用可由用户编辑的 `user_metadata`；
-- `service_role` 或 secret key 不得出现在 `NEXT_PUBLIC_*` 环境变量中。
+- Supabase secret key 不得出现在 `NEXT_PUBLIC_*` 环境变量中。
 
 数据库函数优先放在未暴露 schema 中，并撤销不必要的公共执行权限。
 
@@ -368,12 +372,13 @@ type PromptBuildResult = {
 
 - 应用页面和全部交互可运行；
 - 使用预置示例图模拟生成结果；
-- 仍可测试登录、积分、历史和幂等逻辑；
+- 无 Supabase 或火山方舟密钥时，使用进程内演示适配器模拟登录、积分、历史和幂等逻辑；
 - UI 明确显示演示标识；
 - 不调用火山方舟；
+- 演示数据只用于本地预览，开发进程重启后可以重置；
 - 正式环境默认要求显式关闭演示模式并提供全部密钥。
 
-演示模式不是绕过登录或数据库的静态假页面。
+演示模式与真实模式共享页面、表单、提示词和编排接口，但不会被描述为真实持久化或真实安全边界。
 
 ## 12. API 设计
 
@@ -427,7 +432,8 @@ type PromptBuildResult = {
 ```text
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_SECRET_KEY=
+SUPABASE_DB_URL=
 VOLCENGINE_API_KEY=
 VOLCENGINE_IMAGE_API_URL=
 VOLCENGINE_IMAGE_MODEL=doubao-seedream-4-5-251128
@@ -435,7 +441,7 @@ DEMO_MODE=true
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-公开配置只允许 Supabase URL 和 publishable key。所有管理员和模型密钥只在服务端读取。
+公开配置只允许 Supabase URL 和 publishable key。Supabase secret key、数据库连接串和模型密钥只在服务端读取。
 
 ## 14. 错误与恢复
 
