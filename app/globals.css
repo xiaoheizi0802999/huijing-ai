@@ -66,6 +66,141 @@ button {
   color: var(--color-ink);
 }
 
+.cinematic-header {
+  position: fixed;
+  z-index: 80;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 76px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(3, 4, 5, 0.58);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.cinematic-header__inner,
+.cinematic-header__mobile-top {
+  display: flex;
+  width: 100%;
+  height: 76px;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: clamp(20px, 4vw, 64px);
+}
+
+.cinematic-header__logo {
+  color: var(--color-ink);
+  font-family: var(--font-serif), "Songti SC", "SimSun", serif;
+  font-size: 22px;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+.cinematic-header__logo span {
+  color: var(--color-cold);
+  font-size: 0.68em;
+  letter-spacing: 0.16em;
+}
+
+.cinematic-header__desktop,
+.cinematic-header__nav-list {
+  display: flex;
+  align-items: center;
+}
+
+.cinematic-header__desktop {
+  gap: 30px;
+}
+
+.cinematic-header__nav-list {
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cinematic-header__nav-link {
+  color: var(--color-muted);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  transition: color 250ms ease;
+}
+
+.cinematic-header__nav-link:hover,
+.cinematic-header__nav-link:focus-visible {
+  color: var(--color-ink);
+}
+
+.cinematic-header__cta,
+.cinematic-header__mobile-cta {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-ink);
+  color: var(--color-ink);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  padding-inline: 22px;
+  text-decoration: none;
+}
+
+.cinematic-header__menu-trigger,
+.cinematic-header__menu-close {
+  display: none;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.cinematic-header__mobile-dialog {
+  position: fixed;
+  z-index: 1;
+  inset: 0;
+  min-height: 100dvh;
+  background: rgba(3, 4, 5, 0.98);
+}
+
+.cinematic-header__mobile-nav {
+  display: flex;
+  min-height: calc(100dvh - 76px);
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px clamp(20px, 6vw, 32px) 64px;
+}
+
+.cinematic-header__mobile-links {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin: 0 0 48px;
+  padding: 0;
+  list-style: none;
+}
+
+.cinematic-header__mobile-links a {
+  color: var(--color-ink);
+  font-family: var(--font-serif), "Songti SC", "SimSun", serif;
+  font-size: 34px;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.cinematic-header__mobile-cta {
+  min-height: 48px;
+  padding-inline: 28px;
+  font-family: inherit;
+}
+
 .film-grain {
   position: fixed;
   z-index: 90;
@@ -165,5 +300,20 @@ button {
     opacity: 1;
     transform: none;
     transition-duration: 120ms;
+  }
+}
+
+@media (max-width: 767px) {
+  .cinematic-header__desktop {
+    display: none;
+  }
+
+  .cinematic-header__menu-trigger,
+  .cinematic-header__menu-close {
+    display: inline-flex;
+  }
+
+  .cinematic-header__mobile-top {
+    padding-inline: clamp(20px, 6vw, 32px);
   }
 }
