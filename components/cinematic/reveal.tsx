@@ -33,6 +33,13 @@ export function Reveal({
       return
     }
 
+    if (typeof IntersectionObserver === "undefined") {
+      // The fallback must reveal after mount when observation is unavailable.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsVisible(true)
+      return
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry?.isIntersecting) {

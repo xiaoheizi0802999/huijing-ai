@@ -62,19 +62,20 @@ button {
   position: relative;
   isolation: isolate;
   overflow: clip;
-  background: #030405;
-  color: #f2f3f1;
+  background: var(--color-canvas);
+  color: var(--color-ink);
 }
 
 .film-grain {
   position: fixed;
   z-index: 90;
-  inset: -50%;
+  inset: -12%;
   pointer-events: none;
   background-image: url("/cinematic/noise.png");
   background-repeat: repeat;
-  background-size: 512px 512px;
+  background-size: 256px 256px;
   opacity: 0.065;
+  will-change: transform;
   animation: grain-shift 0.24s steps(2) infinite;
 }
 
@@ -99,8 +100,8 @@ button {
   justify-content: center;
   overflow: hidden;
   padding: 0 28px;
-  border: 1px solid rgba(255,255,255,.3);
-  color: #f2f3f1;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--color-ink);
   font-family: inherit;
   font-size: 13px;
   letter-spacing: 0.08em;
@@ -112,10 +113,14 @@ button {
     background 350ms ease;
 }
 
+.cinematic-button:active {
+  transform: translateY(1px);
+}
+
 .cinematic-button--solid {
-  border-color: #f2f3f1;
-  background: #f2f3f1;
-  color: #030405;
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-canvas);
 }
 
 .cinematic-button--outline {
@@ -124,8 +129,8 @@ button {
 
 .cinematic-button--outline:hover,
 .cinematic-button--outline:focus-visible {
-  border-color: #b9e2f8;
-  background: rgba(185,226,248,.07);
+  border-color: var(--color-cold);
+  background: rgba(185, 226, 248, 0.07);
 }
 
 @keyframes grain-shift {
@@ -150,6 +155,12 @@ button {
   }
 }
 
+@media (max-width: 767px) {
+  .film-grain {
+    opacity: 0.04;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -157,6 +168,7 @@ button {
 
   .film-grain {
     animation: none;
+    transform: none;
   }
 
   .reveal {

@@ -1,45 +1,74 @@
 import Link from "next/link"
-import type { MouseEventHandler, ReactNode } from "react"
+import type {
+  ButtonHTMLAttributes,
+  ComponentProps,
+  MouseEventHandler,
+  ReactNode,
+} from "react"
 
-type CinematicButtonProps = {
-  ariaLabel?: string
+type Shared = {
   children: ReactNode
-  href?: string
-  onClick?: MouseEventHandler<HTMLElement>
   variant?: "solid" | "outline"
+  ariaLabel?: string
 }
 
-export function CinematicButton({
-  ariaLabel,
-  children,
-  href,
-  onClick,
-  variant = "solid",
-}: CinematicButtonProps) {
-  const className = `cinematic-button cinematic-button--${variant}`
-  const content = <span>{children}</span>
+type LinkProps = Shared &
+  Omit<
+    ComponentProps<typeof Link>,
+    "className" | "children" | "aria-label" | "onClick"
+  > & {
+    href: ComponentProps<typeof Link>["href"]
+    onClick?: MouseEventHandler<HTMLAnchorElement>
+  }
 
-  if (href) {
+type ButtonProps = Shared &
+  Omit<
+    ButtonHTMLAttributes<HTMLButtonElement>,
+    "className" | "children" | "aria-label"
+  > & {
+    href?: never
+  }
+
+type CinematicButtonProps = LinkProps | ButtonProps
+
+export function CinematicButton(props: CinematicButtonProps) {
+  if (props.href !== undefined) {
+    const {
+      ariaLabel,
+      children,
+      variant = "solid",
+      ...linkProps
+    } = props
+    const className = `cinematic-button cinematic-button--${variant}`
+
     return (
       <Link
+        {...linkProps}
         aria-label={ariaLabel}
         className={className}
-        href={href}
-        onClick={onClick}
       >
-        {content}
+        <span>{children}</span>
       </Link>
     )
   }
 
+  const {
+    ariaLabel,
+    children,
+    variant = "solid",
+    type = "button",
+    ...buttonProps
+  } = props
+  const className = `cinematic-button cinematic-button--${variant}`
+
   return (
     <button
+      {...buttonProps}
       aria-label={ariaLabel}
       className={className}
-      onClick={onClick}
-      type="button"
+      type={type}
     >
-      {content}
+      <span>{children}</span>
     </button>
   )
 }
