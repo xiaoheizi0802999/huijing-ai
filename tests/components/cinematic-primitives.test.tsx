@@ -216,11 +216,11 @@ it("renders solid and outline cinematic links with anchor props", () => {
     </>,
   )
 
-  expect(screen.getByRole("link", { name: "Generate" })).toHaveAttribute(
-    "href",
-    "/generate",
-  )
-  expect(screen.getByRole("link", { name: "Generate" })).toHaveClass(
+  const generateLink = screen.getByRole("link", { name: "Generate" })
+
+  expect(generateLink.tagName).toBe("A")
+  expect(generateLink).toHaveAttribute("href", "/generate")
+  expect(generateLink).toHaveClass(
     "cinematic-button",
     "cinematic-button--solid",
     "hero-link",
@@ -245,6 +245,7 @@ it("renders a clickable button when href is omitted", () => {
   fireEvent.click(screen.getByRole("button", { name: "播放影片" }))
 
   expect(onClick).toHaveBeenCalledOnce()
+  expect(screen.getByRole("button")).not.toHaveAttribute("target")
 })
 
 it("forwards native button props and defaults type to button", () => {

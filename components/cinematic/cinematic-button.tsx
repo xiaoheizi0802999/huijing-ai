@@ -14,30 +14,74 @@ type Shared = {
   variant?: "solid" | "outline"
 }
 
+type ButtonOnlyProp =
+  | "disabled"
+  | "form"
+  | "formAction"
+  | "formEncType"
+  | "formMethod"
+  | "formNoValidate"
+  | "formTarget"
+  | "name"
+  | "type"
+  | "value"
+
+type ButtonOnlyExclusions = {
+  [K in ButtonOnlyProp]?: never
+}
+
+type ButtonOnlyExclusionsWithoutType = Omit<ButtonOnlyExclusions, "type">
+
+type LinkOnlyProp =
+  | "download"
+  | "href"
+  | "hrefLang"
+  | "media"
+  | "ping"
+  | "referrerPolicy"
+  | "rel"
+  | "target"
+  | "type"
+  | "replace"
+  | "scroll"
+  | "shallow"
+  | "prefetch"
+  | "locale"
+  | "legacyBehavior"
+  | "passHref"
+  | "onNavigate"
+  | "transitionTypes"
+
+type LinkOnlyExclusions = {
+  [K in LinkOnlyProp]?: never
+}
+
+type TrueLinkOnlyExclusions = Omit<LinkOnlyExclusions, "type">
+
 export type LinkButtonProps = Shared &
   Omit<
     ComponentProps<typeof Link>,
-    "children" | "className" | "aria-label" | "onClick"
-  > & {
+    | "children"
+    | "className"
+    | "aria-label"
+    | "onClick"
+    | "legacyBehavior"
+    | "passHref"
+    | Exclude<ButtonOnlyProp, "type">
+  > &
+  ButtonOnlyExclusionsWithoutType & {
     href: ComponentProps<typeof Link>["href"]
+    legacyBehavior?: never
     onClick?: MouseEventHandler<HTMLAnchorElement>
+    passHref?: never
   }
 
 export type NativeButtonProps = Shared &
   Omit<
     ButtonHTMLAttributes<HTMLButtonElement>,
     "children" | "className" | "aria-label"
-  > & {
-    download?: never
-    href?: never
-    locale?: never
-    prefetch?: never
-    rel?: never
-    replace?: never
-    scroll?: never
-    shallow?: never
-    target?: never
-  }
+  > &
+  TrueLinkOnlyExclusions
 
 export function CinematicButton(props: LinkButtonProps): ReactElement
 export function CinematicButton(props: NativeButtonProps): ReactElement
