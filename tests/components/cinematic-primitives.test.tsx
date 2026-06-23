@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs"
+import path from "node:path"
 import {
   act,
   cleanup,
@@ -9,6 +11,20 @@ import { expect, it, vi } from "vitest"
 import { CinematicButton } from "@/components/cinematic/cinematic-button"
 import { FilmGrain } from "@/components/cinematic/film-grain"
 import { Reveal } from "@/components/cinematic/reveal"
+
+it("keeps the cinematic CSS motion and button contracts", () => {
+  const css = readFileSync(
+    path.resolve(process.cwd(), "app/globals.css"),
+    "utf8",
+  )
+
+  expect(css).toContain("min-height: 48px")
+  expect(css).toContain("grain-shift 0.24s steps(2) infinite")
+  expect(css).toContain("cubic-bezier(0.22, 1, 0.36, 1)")
+  expect(css).toContain(
+    ".cinematic-button--outline:hover,\n.cinematic-button--outline:focus-visible",
+  )
+})
 
 it("renders solid and outline cinematic links", () => {
   render(

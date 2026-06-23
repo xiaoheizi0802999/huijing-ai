@@ -21,8 +21,8 @@
 }
 
 ::selection {
-  background: var(--color-cold);
-  color: var(--color-canvas);
+  background: rgba(185,226,248,0.22);
+  color: #ffffff;
 }
 
 html {
@@ -55,12 +55,15 @@ button {
 
 :focus-visible {
   outline: 1px solid var(--color-cold);
-  outline-offset: 4px;
+  outline-offset: 5px;
 }
 
 .cinematic-page {
+  position: relative;
   isolation: isolate;
   overflow: clip;
+  background: #030405;
+  color: #f2f3f1;
 }
 
 .film-grain {
@@ -72,62 +75,57 @@ button {
   background-repeat: repeat;
   background-size: 512px 512px;
   opacity: 0.065;
-  animation: grain-shift 800ms steps(8) infinite;
+  animation: grain-shift 0.24s steps(2) infinite;
 }
 
 .reveal {
   opacity: 0;
-  transform: translateY(24px);
+  transform: translate3d(0, 24px, 0);
   transition:
-    opacity 900ms cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms),
-    transform 900ms cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms);
+    opacity 900ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay),
+    transform 900ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay);
 }
 
 .reveal--visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
 }
 
 .cinematic-button {
+  position: relative;
   display: inline-flex;
-  height: 48px;
+  min-height: 48px;
   align-items: center;
   justify-content: center;
-  padding: 0 24px;
-  border: 1px solid transparent;
-  border-radius: 0;
-  font: inherit;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: 0.02em;
+  overflow: hidden;
+  padding: 0 28px;
+  border: 1px solid rgba(255,255,255,.3);
+  color: #f2f3f1;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.08em;
   text-decoration: none;
   cursor: pointer;
   transition:
-    color 180ms ease,
-    background-color 180ms ease,
-    border-color 180ms ease;
+    color 350ms ease,
+    border-color 350ms ease,
+    background 350ms ease;
 }
 
 .cinematic-button--solid {
-  border-color: var(--color-ink);
-  background: var(--color-ink);
-  color: var(--color-canvas);
-}
-
-.cinematic-button--solid:hover {
-  border-color: var(--color-cold);
-  background: var(--color-cold);
+  border-color: #f2f3f1;
+  background: #f2f3f1;
+  color: #030405;
 }
 
 .cinematic-button--outline {
-  border-color: var(--color-cold-deep);
   background: transparent;
-  color: var(--color-ink);
 }
 
-.cinematic-button--outline:hover {
-  border-color: var(--color-cold);
-  color: var(--color-cold);
+.cinematic-button--outline:hover,
+.cinematic-button--outline:focus-visible {
+  border-color: #b9e2f8;
+  background: rgba(185,226,248,.07);
 }
 
 @keyframes grain-shift {
@@ -135,24 +133,20 @@ button {
     transform: translate3d(0, 0, 0);
   }
 
-  20% {
-    transform: translate3d(-3%, 2%, 0);
+  25% {
+    transform: translate3d(2%, -1%, 0);
   }
 
-  40% {
-    transform: translate3d(2%, -4%, 0);
+  50% {
+    transform: translate3d(-1%, 2%, 0);
   }
 
-  60% {
-    transform: translate3d(4%, 4%, 0);
-  }
-
-  80% {
-    transform: translate3d(-4%, -2%, 0);
+  75% {
+    transform: translate3d(1%, 1%, 0);
   }
 
   100% {
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(-2%, -1%, 0);
   }
 }
 
