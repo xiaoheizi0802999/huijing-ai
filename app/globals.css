@@ -1,25 +1,40 @@
 @import "tailwindcss";
 
+@theme {
+  --color-canvas: #030405;
+  --color-stage: #07090b;
+  --color-graphite: #111419;
+  --color-ink: #f2f3f1;
+  --color-muted: #9a9fa7;
+  --color-cold: #b9e2f8;
+  --color-cold-deep: #7cbbd8;
+}
+
 :root {
   color-scheme: dark;
-  background: #030405;
-  color: #f2f3f1;
+  background: var(--color-canvas);
+  color: var(--color-ink);
 }
 
 * {
   box-sizing: border-box;
 }
 
+::selection {
+  background: var(--color-cold);
+  color: var(--color-canvas);
+}
+
 html {
   scroll-behavior: smooth;
-  background: #030405;
+  background: var(--color-canvas);
 }
 
 body {
   margin: 0;
   min-height: 100vh;
   overflow-x: hidden;
-  background: #030405;
+  background: var(--color-canvas);
   font-family:
     var(--font-sans),
     "PingFang SC",
@@ -31,4 +46,128 @@ h1,
 h2,
 h3 {
   font-family: var(--font-serif), "Songti SC", "SimSun", serif;
+}
+
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 1px solid var(--color-cold);
+  outline-offset: 4px;
+}
+
+.cinematic-page {
+  isolation: isolate;
+  overflow: clip;
+}
+
+.film-grain {
+  position: fixed;
+  z-index: 90;
+  inset: -50%;
+  pointer-events: none;
+  background-image: url("/cinematic/noise.png");
+  background-repeat: repeat;
+  background-size: 512px 512px;
+  opacity: 0.065;
+  animation: grain-shift 800ms steps(8) infinite;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 900ms cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms),
+    transform 900ms cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms);
+}
+
+.reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cinematic-button {
+  display: inline-flex;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  font: inherit;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.cinematic-button--solid {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-canvas);
+}
+
+.cinematic-button--solid:hover {
+  border-color: var(--color-cold);
+  background: var(--color-cold);
+}
+
+.cinematic-button--outline {
+  border-color: var(--color-cold-deep);
+  background: transparent;
+  color: var(--color-ink);
+}
+
+.cinematic-button--outline:hover {
+  border-color: var(--color-cold);
+  color: var(--color-cold);
+}
+
+@keyframes grain-shift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  20% {
+    transform: translate3d(-3%, 2%, 0);
+  }
+
+  40% {
+    transform: translate3d(2%, -4%, 0);
+  }
+
+  60% {
+    transform: translate3d(4%, 4%, 0);
+  }
+
+  80% {
+    transform: translate3d(-4%, -2%, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .film-grain {
+    animation: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition-duration: 120ms;
+  }
 }
