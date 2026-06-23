@@ -113,10 +113,6 @@ button {
     background 350ms ease;
 }
 
-.cinematic-button:active {
-  transform: translateY(1px);
-}
-
 .cinematic-button--solid {
   border-color: var(--color-ink);
   background: var(--color-ink);
@@ -152,12 +148,6 @@ button {
 
   100% {
     transform: translate3d(-2%, -1%, 0);
-  }
-}
-
-@media (max-width: 767px) {
-  .film-grain {
-    opacity: 0.04;
   }
 }
 

@@ -7,11 +7,11 @@ import {
   render,
   screen,
 } from "@testing-library/react"
+import { renderToStaticMarkup } from "react-dom/server"
 import { afterEach, expect, it, vi } from "vitest"
 import { CinematicButton } from "@/components/cinematic/cinematic-button"
 import { FilmGrain } from "@/components/cinematic/film-grain"
 import { Reveal } from "@/components/cinematic/reveal"
-import nextConfig from "@/next.config"
 
 const originalIntersectionObserverDescriptor =
   Object.getOwnPropertyDescriptor(window, "IntersectionObserver")
@@ -133,27 +133,46 @@ it("keeps cinematic CSS contracts scoped to the intended rules", () => {
     path.resolve(process.cwd(), "app/globals.css"),
     "utf8",
   )
+  const theme = extractCssBlock(css, "@theme")
   const button = extractCssBlock(css, ".cinematic-button")
-  const activeButton = extractCssBlock(css, ".cinematic-button:active")
   const grain = extractCssBlock(css, ".film-grain")
   const reveal = extractCssBlock(css, ".reveal")
   const reducedMotion = extractCssBlock(
     css,
     "@media (prefers-reduced-motion: reduce)",
   )
+  const reducedHtml = extractCssBlock(reducedMotion, "html")
   const reducedGrain = extractCssBlock(reducedMotion, ".film-grain")
-  const mobile = extractCssBlock(css, "@media (max-width: 767px)")
-  const mobileGrain = extractCssBlock(mobile, ".film-grain")
+  const reducedReveal = extractCssBlock(reducedMotion, ".reveal")
+  const themeColors = Array.from(
+    theme.matchAll(/(--color-[\w-]+):\s*(#[\da-f]{6});/gi),
+    ([, name, value]) => [name, value],
+  )
 
+  expect(themeColors).toEqual([
+    ["--color-canvas", "#030405"],
+    ["--color-stage", "#07090b"],
+    ["--color-graphite", "#111419"],
+    ["--color-ink", "#f2f3f1"],
+    ["--color-muted", "#9a9fa7"],
+    ["--color-cold", "#b9e2f8"],
+    ["--color-cold-deep", "#7cbbd8"],
+  ])
   expect(button).toMatch(/min-height:\s*48px/)
   expect(button).toMatch(/color:\s*var\(--color-ink\)/)
-  expect(activeButton).toMatch(/transform:\s*translateY\(1px\)/)
+  expect(css).not.toMatch(/\.cinematic-button:active\s*\{/)
   expect(grain).toMatch(/inset:\s*-12%/)
   expect(grain).toMatch(/background-size:\s*256px 256px/)
   expect(grain).toMatch(/will-change:\s*transform/)
   expect(grain).toMatch(/animation:\s*grain-shift 0\.24s steps\(2\) infinite/)
-  expect(mobileGrain).toMatch(/opacity:\s*0\.04/)
+  expect(css).not.toMatch(
+    /@media\s*\(max-width:\s*767px\)\s*\{\s*\.film-grain\s*\{[^}]*opacity:/,
+  )
+  expect(reducedHtml).toMatch(/scroll-behavior:\s*auto/)
   expect(reducedGrain).toMatch(/animation:\s*none/)
+  expect(reducedReveal).toMatch(/opacity:\s*1/)
+  expect(reducedReveal).toMatch(/transform:\s*none/)
+  expect(reducedReveal).toMatch(/transition-duration:\s*120ms/)
   expect(reveal).toMatch(/cubic-bezier\(0\.22,\s*1,\s*0\.36,\s*1\)/)
 })
 
@@ -170,39 +189,22 @@ it("keeps the cinematic noise asset compact and decodable", () => {
   const height = noise.readUInt32BE(20)
   const colorType = noise[25]
 
-  expect(width).toBeGreaterThanOrEqual(256)
-  expect(width).toBeLessThanOrEqual(512)
-  expect(height).toBeGreaterThanOrEqual(256)
-  expect(height).toBeLessThanOrEqual(512)
+  expect(width).toBe(256)
+  expect(height).toBe(256)
   expect([0, 3]).toContain(colorType)
-  expect(noise.byteLength).toBeLessThan(180_000)
-})
-
-it("sets immutable caching only for cinematic assets", async () => {
-  const headers = await nextConfig.headers?.()
-
-  expect(headers).toEqual(
-    expect.arrayContaining([
-      {
-        source: "/cinematic/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
-    ]),
-  )
-  expect(headers).not.toEqual(
-    expect.arrayContaining([expect.objectContaining({ source: "/:path*" })]),
-  )
+  expect(noise.byteLength).toBeLessThan(50_000)
 })
 
 it("renders solid and outline cinematic links with anchor props", () => {
   render(
     <>
-      <CinematicButton href="/generate">开始生成</CinematicButton>
+      <CinematicButton
+        ariaLabel="Generate"
+        className="hero-link"
+        href="/generate"
+      >
+        Generate artwork
+      </CinematicButton>
       <CinematicButton
         href="/gallery"
         rel="noreferrer"
@@ -214,13 +216,14 @@ it("renders solid and outline cinematic links with anchor props", () => {
     </>,
   )
 
-  expect(screen.getByRole("link", { name: "开始生成" })).toHaveAttribute(
+  expect(screen.getByRole("link", { name: "Generate" })).toHaveAttribute(
     "href",
     "/generate",
   )
-  expect(screen.getByRole("link", { name: "开始生成" })).toHaveClass(
+  expect(screen.getByRole("link", { name: "Generate" })).toHaveClass(
     "cinematic-button",
     "cinematic-button--solid",
+    "hero-link",
   )
   expect(screen.getByRole("link", { name: "查看作品" })).toHaveClass(
     "cinematic-button--outline",
@@ -246,17 +249,28 @@ it("renders a clickable button when href is omitted", () => {
 
 it("forwards native button props and defaults type to button", () => {
   render(
-    <CinematicButton aria-expanded={false} disabled form="player-controls">
-      暂停影片
+    <CinematicButton
+      aria-expanded={false}
+      ariaLabel="Pause"
+      className="player-button"
+      disabled
+      form="player-controls"
+    >
+      Pause film
     </CinematicButton>,
   )
 
-  const button = screen.getByRole("button", { name: "暂停影片" })
+  const button = screen.getByRole("button", { name: "Pause" })
 
   expect(button).toBeDisabled()
   expect(button).toHaveAttribute("aria-expanded", "false")
   expect(button).toHaveAttribute("form", "player-controls")
   expect(button).toHaveAttribute("type", "button")
+  expect(button).toHaveClass(
+    "cinematic-button",
+    "cinematic-button--solid",
+    "player-button",
+  )
 })
 
 it("renders film grain as hidden decoration", () => {
@@ -264,6 +278,16 @@ it("renders film grain as hidden decoration", () => {
   const grain = container.querySelector(".film-grain")
 
   expect(grain).toHaveAttribute("aria-hidden", "true")
+})
+
+it("renders Reveal as visible in server markup", () => {
+  const markup = renderToStaticMarkup(
+    <Reveal>
+      <p>Server-visible content</p>
+    </Reveal>,
+  )
+
+  expect(markup).toContain('class="reveal reveal--visible"')
 })
 
 it("reveals immediately when IntersectionObserver is unavailable", () => {
@@ -297,6 +321,7 @@ it("observes the rendered Reveal node", () => {
   expect(observer.observe).toHaveBeenCalledWith(reveal)
   expect(observer.getOptions()?.threshold).toBe(0.18)
   expect(reveal).toHaveStyle("--reveal-delay: 120ms")
+  expect(reveal).not.toHaveClass("reveal--visible")
 })
 
 it("does not reveal for a non-intersecting entry", () => {

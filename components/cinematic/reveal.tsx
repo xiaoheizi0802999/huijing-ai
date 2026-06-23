@@ -2,6 +2,7 @@
 
 import {
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -18,15 +19,18 @@ type RevealStyle = CSSProperties & {
   "--reveal-delay": string
 }
 
+const useIsomorphicLayoutEffect =
+  typeof window === "undefined" ? useEffect : useLayoutEffect
+
 export function Reveal({
   children,
   className,
   delay = 0,
 }: RevealProps) {
   const elementRef = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState(true)
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const element = elementRef.current
 
     if (!element) {
@@ -34,11 +38,11 @@ export function Reveal({
     }
 
     if (typeof IntersectionObserver === "undefined") {
-      // The fallback must reveal after mount when observation is unavailable.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setIsVisible(true)
       return
     }
+
+    // Hide before paint only when progressive reveal is available.
+    setIsVisible(false)
 
     const observer = new IntersectionObserver(
       ([entry]) => {

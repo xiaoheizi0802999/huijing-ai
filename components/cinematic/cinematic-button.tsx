@@ -3,43 +3,62 @@ import type {
   ButtonHTMLAttributes,
   ComponentProps,
   MouseEventHandler,
+  ReactElement,
   ReactNode,
 } from "react"
 
 type Shared = {
-  children: ReactNode
-  variant?: "solid" | "outline"
   ariaLabel?: string
+  children: ReactNode
+  className?: string
+  variant?: "solid" | "outline"
 }
 
-type LinkProps = Shared &
+export type LinkButtonProps = Shared &
   Omit<
     ComponentProps<typeof Link>,
-    "className" | "children" | "aria-label" | "onClick"
+    "children" | "className" | "aria-label" | "onClick"
   > & {
     href: ComponentProps<typeof Link>["href"]
     onClick?: MouseEventHandler<HTMLAnchorElement>
   }
 
-type ButtonProps = Shared &
+export type NativeButtonProps = Shared &
   Omit<
     ButtonHTMLAttributes<HTMLButtonElement>,
-    "className" | "children" | "aria-label"
+    "children" | "className" | "aria-label"
   > & {
+    download?: never
     href?: never
+    locale?: never
+    prefetch?: never
+    rel?: never
+    replace?: never
+    scroll?: never
+    shallow?: never
+    target?: never
   }
 
-type CinematicButtonProps = LinkProps | ButtonProps
-
-export function CinematicButton(props: CinematicButtonProps) {
+export function CinematicButton(props: LinkButtonProps): ReactElement
+export function CinematicButton(props: NativeButtonProps): ReactElement
+export function CinematicButton(
+  props: LinkButtonProps | NativeButtonProps,
+) {
   if (props.href !== undefined) {
     const {
       ariaLabel,
       children,
+      className: customClassName,
       variant = "solid",
       ...linkProps
     } = props
-    const className = `cinematic-button cinematic-button--${variant}`
+    const className = [
+      "cinematic-button",
+      `cinematic-button--${variant}`,
+      customClassName,
+    ]
+      .filter(Boolean)
+      .join(" ")
 
     return (
       <Link
@@ -55,11 +74,18 @@ export function CinematicButton(props: CinematicButtonProps) {
   const {
     ariaLabel,
     children,
+    className: customClassName,
     variant = "solid",
     type = "button",
     ...buttonProps
   } = props
-  const className = `cinematic-button cinematic-button--${variant}`
+  const className = [
+    "cinematic-button",
+    `cinematic-button--${variant}`,
+    customClassName,
+  ]
+    .filter(Boolean)
+    .join(" ")
 
   return (
     <button
