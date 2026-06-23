@@ -33,6 +33,7 @@ type ButtonOnlyExclusions = {
 type ButtonOnlyExclusionsWithoutType = Omit<ButtonOnlyExclusions, "type">
 
 type LinkOnlyProp =
+  | "as"
   | "download"
   | "href"
   | "hrefLang"

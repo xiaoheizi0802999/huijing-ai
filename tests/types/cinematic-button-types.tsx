@@ -65,6 +65,10 @@ const targetSpreadButton = (
   <CinematicButton {...spreadTargetButton}>Invalid</CinematicButton>
 )
 
+const spreadAsButton = { as: "/masked" } as const
+// @ts-expect-error Next Link as prop requires href
+;<CinematicButton {...spreadAsButton}>Bad</CinematicButton>
+
 const spreadFormLink = { href: "/gallery", form: "create-form" } as const
 const formSpreadLink = (
   // @ts-expect-error Native button props are forbidden when href is present.
