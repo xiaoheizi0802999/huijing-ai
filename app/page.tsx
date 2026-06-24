@@ -2,6 +2,7 @@ import { CapabilitiesSection } from "@/components/cinematic/capabilities-section
 import { CinematicHeader } from "@/components/cinematic/cinematic-header"
 import { FilmGrain } from "@/components/cinematic/film-grain"
 import { HeroSection } from "@/components/cinematic/hero-section"
+import { ProcessSection } from "@/components/cinematic/process-section"
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <main>
         <HeroSection />
         <CapabilitiesSection />
+        <ProcessSection />
       </main>
     </div>
   )

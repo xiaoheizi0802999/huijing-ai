@@ -45,3 +45,18 @@ it("renders hero actions, frame label, and core capabilities", () => {
     screen.getByRole("heading", { name: "自动生成专业提示词" }),
   ).toBeInTheDocument()
 })
+
+it("renders the five-shot creation process section", () => {
+  const { container } = render(<Home />)
+
+  expect(container.querySelector("#process")).toBeInTheDocument()
+  expect(
+    screen.getByRole("heading", {
+      name: /从想法到大片，\s*只需五个镜头/,
+    }),
+  ).toBeInTheDocument()
+  expect(screen.getAllByText(/STEP 0[1-5]/)).toHaveLength(5)
+  expect(
+    screen.getByRole("heading", { name: "生成高清图片" }),
+  ).toBeInTheDocument()
+})
