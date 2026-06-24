@@ -1,6 +1,7 @@
 import { CapabilitiesSection } from "@/components/cinematic/capabilities-section"
 import { CinematicHeader } from "@/components/cinematic/cinematic-header"
 import { FilmGrain } from "@/components/cinematic/film-grain"
+import { GallerySection } from "@/components/cinematic/gallery-section"
 import { HeroSection } from "@/components/cinematic/hero-section"
 import { ProcessSection } from "@/components/cinematic/process-section"
 
@@ -13,6 +14,7 @@ export default function Home() {
         <HeroSection />
         <CapabilitiesSection />
         <ProcessSection />
+        <GallerySection />
       </main>
     </div>
   )
