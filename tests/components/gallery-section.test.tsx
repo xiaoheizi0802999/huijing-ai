@@ -58,10 +58,8 @@ it("renders every editorial AI gallery work accessibly", async () => {
       .toBeInTheDocument()
     expect(within(figure).getByText(item.description)).toBeInTheDocument()
     expect(figure.parentElement).toHaveClass(item.className)
-
-    if (item.alt.length > 0) {
-      expect(screen.getByAltText(item.alt)).toBeInTheDocument()
-    }
+    expect(item.alt).not.toHaveLength(0)
+    expect(screen.getByAltText(item.alt)).toBeInTheDocument()
   }
 })
 
