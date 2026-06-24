@@ -60,8 +60,8 @@ export function CinematicHeader() {
         </Link>
 
         <div className="cinematic-header__desktop">
-          <nav aria-label="主导航">
-            <ul className="cinematic-header__nav-list">
+          <nav aria-label="主导航" className="cinematic-nav">
+            <ul className="cinematic-nav__list">
               {links.map((link) => (
                 <li key={link.href}>
                   <Link
@@ -100,7 +100,7 @@ export function CinematicHeader() {
         <div
           aria-label="站点导航"
           aria-modal="true"
-          className="cinematic-header__mobile-dialog"
+          className="mobile-menu"
           id="mobile-site-nav"
           role="dialog"
         >

@@ -75,6 +75,18 @@ it("closes the mobile menu and restores body overflow after link navigation", ()
 
   fireEvent.click(screen.getByRole("button", { name: "打开导航" }))
   const dialog = screen.getByRole("dialog", { name: "站点导航" })
+  const mobileHrefs = within(dialog)
+    .getAllByRole("link")
+    .map((link) => link.getAttribute("href"))
+
+  expect(mobileHrefs).toEqual([
+    "/",
+    "#gallery",
+    "#process",
+    "#membership",
+    "/generate",
+  ])
+
   fireEvent.click(within(dialog).getByRole("link", { name: "作品" }))
 
   expect(
