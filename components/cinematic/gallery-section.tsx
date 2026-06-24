@@ -2,8 +2,16 @@ import Image from "next/image"
 import { cinematicAssets, galleryItems } from "@/lib/landing-content"
 import { Reveal } from "./reveal"
 
-const galleryImageSizes =
-  "(max-width: 520px) 100vw, (max-width: 767px) 50vw, 34vw"
+type GalleryItemSlug = (typeof galleryItems)[number]["slug"]
+
+const galleryImageSizes = {
+  portrait: "(max-width: 767px) 50vw, 34vw",
+  product: "(max-width: 767px) 100vw, 42vw",
+  fantasy: "(max-width: 767px) 50vw, 25vw",
+  fashion: "(max-width: 767px) 50vw, 25vw",
+  architecture: "(max-width: 767px) 100vw, 42vw",
+  car: "(max-width: 767px) 100vw, 34vw",
+} satisfies Record<GalleryItemSlug, string>
 
 export function GallerySection() {
   return (
@@ -40,7 +48,7 @@ export function GallerySection() {
                 <Image
                   alt={item.alt}
                   fill
-                  sizes={galleryImageSizes}
+                  sizes={galleryImageSizes[item.slug]}
                   src={item.src}
                   style={{ objectPosition: asset.focalPoint }}
                 />

@@ -13,6 +13,15 @@ const expectedGalleryTitles = [
   "Cinematic Car Scene",
 ] as const
 
+const expectedImageSizes = {
+  portrait: "(max-width: 767px) 50vw, 34vw",
+  product: "(max-width: 767px) 100vw, 42vw",
+  fantasy: "(max-width: 767px) 50vw, 25vw",
+  fashion: "(max-width: 767px) 50vw, 25vw",
+  architecture: "(max-width: 767px) 100vw, 42vw",
+  car: "(max-width: 767px) 100vw, 34vw",
+} satisfies Record<(typeof galleryItems)[number]["slug"], string>
+
 function getNarrowMobileGalleryCss() {
   const globalsCss = readFileSync(
     path.join(process.cwd(), "app", "globals.css"),
@@ -23,6 +32,20 @@ function getNarrowMobileGalleryCss() {
   expect(mediaQueryStart).toBeGreaterThanOrEqual(0)
 
   return globalsCss.slice(mediaQueryStart)
+}
+
+function getDeclarationBlock(css: string, selector: string) {
+  const selectorStart = css.indexOf(selector)
+
+  expect(selectorStart).toBeGreaterThanOrEqual(0)
+
+  const blockStart = css.indexOf("{", selectorStart)
+  const blockEnd = css.indexOf("}", blockStart)
+
+  expect(blockStart).toBeGreaterThan(selectorStart)
+  expect(blockEnd).toBeGreaterThan(blockStart)
+
+  return css.slice(blockStart + 1, blockEnd)
 }
 
 afterEach(() => {
@@ -59,7 +82,11 @@ it("renders every editorial AI gallery work accessibly", async () => {
     expect(within(figure).getByText(item.description)).toBeInTheDocument()
     expect(figure.parentElement).toHaveClass(item.className)
     expect(item.alt).not.toHaveLength(0)
-    expect(screen.getByAltText(item.alt)).toBeInTheDocument()
+
+    const image = screen.getByAltText(item.alt)
+
+    expect(image).toBeInTheDocument()
+    expect(image).toHaveAttribute("sizes", expectedImageSizes[item.slug])
   }
 })
 
@@ -70,13 +97,14 @@ it("keeps the narrow mobile gallery as an editorial two-column collage", () => {
     "grid-template-columns: repeat(2, minmax(0, 1fr));",
   )
   expect(narrowMobileGalleryCss).not.toContain("grid-template-columns: 1fr;")
-  expect(narrowMobileGalleryCss).toMatch(
-    /\.gallery-frame\.gallery-item--product[\s\S]*grid-column: span 2;/,
-  )
-  expect(narrowMobileGalleryCss).toMatch(
-    /\.gallery-frame\.gallery-item--architecture[\s\S]*grid-column: span 2;/,
-  )
-  expect(narrowMobileGalleryCss).toMatch(
-    /\.gallery-frame\.gallery-item--car[\s\S]*grid-column: span 2;/,
-  )
+
+  for (const selector of [
+    ".gallery-frame.gallery-item--product",
+    ".gallery-frame.gallery-item--architecture",
+    ".gallery-frame.gallery-item--car",
+  ]) {
+    expect(getDeclarationBlock(narrowMobileGalleryCss, selector)).toContain(
+      "grid-column: span 2;",
+    )
+  }
 })
