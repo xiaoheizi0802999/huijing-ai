@@ -167,6 +167,7 @@ button {
   z-index: 1;
   inset: 0;
   min-height: 100dvh;
+  overflow-y: auto;
   background: rgba(3, 4, 5, 0.98);
 }
 

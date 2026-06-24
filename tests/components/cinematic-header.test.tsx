@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs"
 import {
   cleanup,
   fireEvent,
@@ -9,6 +10,15 @@ import { afterEach, expect, it } from "vitest"
 import { CinematicHeader } from "@/components/cinematic/cinematic-header"
 
 const originalBodyOverflow = document.body.style.overflow
+
+function getGlobalCssRule(selector: string) {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  const ruleMatch = readFileSync("app/globals.css", "utf8").match(
+    new RegExp(`${escapedSelector}\\s*\\{(?<declarations>[^}]*)\\}`),
+  )
+
+  return ruleMatch?.groups?.declarations ?? ""
+}
 
 afterEach(() => {
   cleanup()
@@ -53,6 +63,34 @@ it("opens an accessible modal navigation and moves focus to close", () => {
   expect(dialog).toHaveAttribute("aria-modal", "true")
   expect(document.body.style.overflow).toBe("hidden")
   expect(closeButton).toHaveFocus()
+})
+
+it("traps keyboard focus inside the open mobile menu", () => {
+  render(<CinematicHeader />)
+
+  fireEvent.click(screen.getByRole("button", { name: "打开导航" }))
+
+  const dialog = screen.getByRole("dialog", { name: "站点导航" })
+  const closeButton = within(dialog).getByRole("button", {
+    name: "关闭导航",
+  })
+  const focusableLinks = within(dialog).getAllByRole("link")
+  const lastFocusableItem = focusableLinks[focusableLinks.length - 1]
+
+  expect(closeButton).toHaveFocus()
+  expect(lastFocusableItem).toHaveAttribute("href", "/generate")
+
+  fireEvent.keyDown(closeButton, { key: "Tab", shiftKey: true })
+
+  expect(lastFocusableItem).toHaveFocus()
+
+  fireEvent.keyDown(lastFocusableItem, { key: "Tab" })
+
+  expect(closeButton).toHaveFocus()
+})
+
+it("allows the mobile menu overlay to scroll independently while the body is locked", () => {
+  expect(getGlobalCssRule(".mobile-menu")).toMatch(/overflow-y\s*:\s*auto\s*;/)
 })
 
 it("closes on Escape, restores body overflow, and returns focus", () => {

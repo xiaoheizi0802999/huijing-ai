@@ -10,10 +10,20 @@ const links = [
   { href: "#membership", label: "积分与会员" },
 ]
 
+const focusableSelector = [
+  "a[href]",
+  "button:not([disabled])",
+  "textarea:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  "[tabindex]:not([tabindex=\"-1\"])",
+].join(", ")
+
 export function CinematicHeader() {
   const [isOpen, setIsOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
   const wasOpen = useRef(false)
 
   useEffect(() => {
@@ -28,10 +38,55 @@ export function CinematicHeader() {
     wasOpen.current = true
     const previousOverflow = document.body.style.overflow
 
+    function getFocusableElements() {
+      const menu = menuRef.current
+
+      if (!menu) {
+        return []
+      }
+
+      const focusableElements = Array.from(
+        menu.querySelectorAll<HTMLElement>(focusableSelector),
+      )
+
+      if (!closeRef.current) {
+        return focusableElements
+      }
+
+      return [
+        closeRef.current,
+        ...focusableElements.filter((element) => element !== closeRef.current),
+      ]
+    }
+
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setIsOpen(false)
+        return
       }
+
+      if (event.key !== "Tab") {
+        return
+      }
+
+      const focusableElements = getFocusableElements()
+
+      if (focusableElements.length === 0) {
+        return
+      }
+
+      event.preventDefault()
+
+      const activeElementIndex = focusableElements.findIndex(
+        (element) => element === document.activeElement,
+      )
+      const currentIndex = activeElementIndex >= 0 ? activeElementIndex : 0
+      const nextIndex = event.shiftKey
+        ? (currentIndex - 1 + focusableElements.length) %
+          focusableElements.length
+        : (currentIndex + 1) % focusableElements.length
+
+      focusableElements[nextIndex].focus()
     }
 
     document.body.style.overflow = "hidden"
@@ -98,6 +153,7 @@ export function CinematicHeader() {
 
       {isOpen ? (
         <div
+          ref={menuRef}
           aria-label="站点导航"
           aria-modal="true"
           className="mobile-menu"
