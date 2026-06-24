@@ -266,6 +266,253 @@ button {
   background: rgba(185, 226, 248, 0.07);
 }
 
+.hero-section,
+.capabilities-section {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero-section {
+  --hero-copy-opacity: 1;
+  --hero-copy-shift: 0px;
+  display: flex;
+  align-items: flex-end;
+  padding: 150px clamp(22px, 5vw, 86px) 9vh;
+  background: var(--color-canvas);
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(
+      circle at 70% 24%,
+      rgba(185, 226, 248, 0.1),
+      transparent 30%
+    ),
+    linear-gradient(90deg, #030405 0%, rgba(3, 4, 5, 0.9) 36%, #07090b 100%);
+}
+
+.hero-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(3, 4, 5, 0.8), transparent 48%),
+    linear-gradient(0deg, rgba(3, 4, 5, 0.72), transparent 32%);
+}
+
+.hero-screen {
+  --hero-screen-shift: 0px;
+  position: absolute;
+  inset: 10vh 4vw 7vh 31vw;
+  z-index: 1;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #080a0c;
+  box-shadow:
+    0 0 90px rgba(185, 226, 248, 0.08),
+    0 24px 90px rgba(0, 0, 0, 0.62);
+  transform: translate3d(0, var(--hero-screen-shift), 0)
+    perspective(1200px) rotateY(-4deg);
+  transform-origin: 65% 50%;
+  will-change: transform;
+}
+
+.hero-screen::after,
+.capabilities-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 54% 14%,
+      rgba(255, 255, 255, 0.13),
+      transparent 25%
+    ),
+    rgba(3, 4, 5, 0.28);
+}
+
+.hero-screen img,
+.capabilities-background {
+  object-fit: cover;
+  filter: saturate(0.55) contrast(1.08) brightness(0.78);
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 3;
+  width: min(760px, 64vw);
+  opacity: var(--hero-copy-opacity);
+  transform: translate3d(0, var(--hero-copy-shift), 0);
+  transition: opacity 120ms linear;
+  will-change: opacity, transform;
+}
+
+.frame-label {
+  margin: 0 0 28px;
+  color: #aab0b7;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.hero-copy h1,
+.section-heading h2 {
+  margin: 0;
+  font-family: var(--font-serif), "Songti SC", "SimSun", serif;
+  font-weight: 500;
+  letter-spacing: -0.055em;
+}
+
+.hero-copy h1 {
+  max-width: 920px;
+  font-size: clamp(64px, 8vw, 132px);
+  line-height: 0.98;
+}
+
+.hero-description {
+  max-width: 490px;
+  margin: 34px 0 0;
+  color: #b2b6bc;
+  font-size: 16px;
+  line-height: 1.9;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 36px;
+}
+
+.capabilities-section {
+  display: grid;
+  grid-template-columns: minmax(0, 0.84fr) minmax(520px, 1.16fr);
+  align-items: center;
+  gap: clamp(44px, 8vw, 132px);
+  padding: 14vh clamp(22px, 5vw, 86px);
+  background: var(--color-stage);
+}
+
+.capabilities-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3, 4, 5, 0.94) 0%,
+      rgba(3, 4, 5, 0.76) 38%,
+      rgba(3, 4, 5, 0.58) 100%
+    ),
+    radial-gradient(
+      ellipse at 74% 18%,
+      rgba(185, 226, 248, 0.1),
+      transparent 34%
+    );
+}
+
+.capabilities-background {
+  opacity: 0.42;
+}
+
+.section-heading,
+.capability-panels {
+  position: relative;
+  z-index: 2;
+}
+
+.capabilities-heading {
+  max-width: 680px;
+}
+
+.section-heading h2 {
+  font-size: clamp(42px, 5.4vw, 84px);
+  line-height: 1.12;
+}
+
+.capability-panels {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  perspective: 1100px;
+}
+
+.capability-panel {
+  min-width: 0;
+}
+
+.capability-card {
+  position: relative;
+  min-height: 440px;
+  padding: 34px 24px 30px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.07),
+      rgba(255, 255, 255, 0.015) 24%
+    ),
+    rgba(10, 13, 16, 0.56);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.capability-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 16px auto;
+  height: 1px;
+  background: rgba(185, 226, 248, 0.38);
+}
+
+.capability-panel:nth-child(2) .capability-card {
+  transform: translateY(-38px);
+}
+
+.capability-card__index {
+  color: rgba(185, 226, 248, 0.8);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+}
+
+.capability-card h3 {
+  margin: 38px 0 18px;
+  color: var(--color-ink);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.capability-card p {
+  margin: 0;
+  color: #a8adb4;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.capability-card small {
+  position: absolute;
+  right: 24px;
+  bottom: 26px;
+  left: 24px;
+  color: #7f858d;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
 @keyframes grain-shift {
   0% {
     transform: translate3d(0, 0, 0);
@@ -303,6 +550,13 @@ button {
     transform: none;
     transition-duration: 120ms;
   }
+
+  .hero-screen,
+  .hero-copy,
+  .capability-card {
+    transform: none !important;
+    transition: none;
+  }
 }
 
 @media (max-width: 767px) {
@@ -318,5 +572,75 @@ button {
 
   .cinematic-header__mobile-top {
     padding-inline: clamp(20px, 6vw, 32px);
+  }
+
+  .hero-section {
+    align-items: flex-start;
+    min-height: 100svh;
+    padding: 132px clamp(20px, 6vw, 32px) 46vh;
+  }
+
+  .hero-section::after {
+    background:
+      linear-gradient(180deg, rgba(3, 4, 5, 0.84), transparent 48%),
+      linear-gradient(0deg, rgba(3, 4, 5, 0.86), transparent 38%);
+  }
+
+  .hero-copy {
+    width: 100%;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(44px, 13vw, 58px);
+  }
+
+  .hero-description {
+    max-width: 30rem;
+    font-size: 15px;
+  }
+
+  .hero-screen {
+    inset: 48vh -16vw 5vh 16vw;
+    transform: none;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .capabilities-section {
+    grid-template-columns: 1fr;
+    gap: 54px;
+    padding: 110px clamp(20px, 6vw, 32px);
+  }
+
+  .capabilities-section::before {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(3, 4, 5, 0.9) 0%,
+        rgba(3, 4, 5, 0.72) 48%,
+        rgba(3, 4, 5, 0.92) 100%
+      ),
+      radial-gradient(
+        ellipse at 62% 20%,
+        rgba(185, 226, 248, 0.08),
+        transparent 42%
+      );
+  }
+
+  .section-heading h2 {
+    font-size: clamp(40px, 11vw, 56px);
+  }
+
+  .capability-panels {
+    grid-template-columns: 1fr;
+  }
+
+  .capability-card,
+  .capability-panel:nth-child(2) .capability-card {
+    min-height: 310px;
+    transform: none;
   }
 }

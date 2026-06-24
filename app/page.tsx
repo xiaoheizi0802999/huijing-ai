@@ -1,7 +1,17 @@
+import { CapabilitiesSection } from "@/components/cinematic/capabilities-section"
+import { CinematicHeader } from "@/components/cinematic/cinematic-header"
+import { FilmGrain } from "@/components/cinematic/film-grain"
+import { HeroSection } from "@/components/cinematic/hero-section"
+
 export default function Home() {
   return (
-    <main>
-      <h1>像导演一样生成你的视觉大片</h1>
-    </main>
+    <div className="cinematic-page">
+      <CinematicHeader />
+      <FilmGrain />
+      <main>
+        <HeroSection />
+        <CapabilitiesSection />
+      </main>
+    </div>
   )
 }
