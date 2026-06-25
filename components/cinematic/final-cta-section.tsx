@@ -23,7 +23,10 @@ export function FinalCtaSection() {
 
       <Reveal className="final-cta-content">
         <p className="frame-label">FRAME 06 / FINAL CUT</p>
-        <h2 id="final-cta-title">每一次生成，都是一帧电影。</h2>
+        <h2 id="final-cta-title">
+          <span>每一次生成，</span>
+          <span>都是一帧电影。</span>
+        </h2>
         <CinematicButton href="/generate">
           开始生成你的第一张作品
         </CinematicButton>

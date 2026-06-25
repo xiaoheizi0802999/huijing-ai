@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, render, screen, within } from "@testing-library/react"
 import { afterEach, expect, it } from "vitest"
 import Home from "@/app/page"
 
@@ -85,9 +85,14 @@ it("renders the final CTA for the preview creation studio", () => {
   render(<Home />)
 
   expect(screen.getByText("FRAME 06 / FINAL CUT")).toBeInTheDocument()
-  expect(
-    screen.getByRole("heading", { name: /每一次生成，都是一帧电影/ }),
-  ).toBeInTheDocument()
+  const finalHeading = screen.getByRole("heading", {
+    name: /每一次生成，\s*都是一帧电影/,
+  })
+
+  expect(finalHeading).toBeInTheDocument()
+  expect(within(finalHeading).getByText("每一次生成，")).toBeInTheDocument()
+  expect(within(finalHeading).getByText("都是一帧电影。")).toBeInTheDocument()
+  expect(finalHeading.querySelectorAll("span")).toHaveLength(2)
   expect(
     screen.getByRole("link", { name: "开始生成你的第一张作品" }),
   ).toHaveAttribute("href", "/generate")

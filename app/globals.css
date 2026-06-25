@@ -1223,6 +1223,10 @@ button {
   line-height: 1.04;
 }
 
+.final-cta-content h2 span {
+  display: block;
+}
+
 .generate-preview-page {
   position: relative;
   display: grid;
