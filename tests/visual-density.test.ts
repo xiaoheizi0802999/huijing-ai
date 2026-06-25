@@ -2,7 +2,10 @@ import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import { expect, it } from "vitest"
 
-const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8")
+const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8").replace(
+  /\r\n/g,
+  "\n",
+)
 
 it("keeps the landing page rhythm compact enough to match the P1 poster reference", () => {
   expect(css).toContain("--poster-section-y: clamp(72px, 9vh, 108px);")

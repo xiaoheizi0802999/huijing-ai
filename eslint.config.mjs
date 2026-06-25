@@ -12,5 +12,12 @@ export default defineConfig([
       },
     },
   },
-  globalIgnores([".next/**", "coverage/**", "next-env.d.ts"]),
+  globalIgnores([
+    ".next/**",
+    ".worktrees/**",
+    ".superpowers/**",
+    "coverage/**",
+    "node_modules/**",
+    "next-env.d.ts",
+  ]),
 ])
