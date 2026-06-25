@@ -59,6 +59,10 @@ button {
 }
 
 .cinematic-page {
+  --poster-section-x: clamp(22px, 5vw, 86px);
+  --poster-section-y: clamp(72px, 9vh, 108px);
+  --poster-section-y-tight: clamp(58px, 7vh, 88px);
+  --poster-rule-inset: clamp(48px, 7vh, 76px);
   position: relative;
   isolation: isolate;
   overflow: clip;
@@ -269,7 +273,6 @@ button {
 .hero-section,
 .capabilities-section {
   position: relative;
-  min-height: 100svh;
   overflow: hidden;
   isolation: isolate;
 }
@@ -279,7 +282,8 @@ button {
   --hero-copy-shift: 0px;
   display: flex;
   align-items: flex-end;
-  padding: 150px clamp(22px, 5vw, 86px) 9vh;
+  min-height: clamp(640px, 86svh, 780px);
+  padding: 112px var(--poster-section-x) var(--poster-section-y-tight);
   background: var(--color-canvas);
 }
 
@@ -311,7 +315,7 @@ button {
 .hero-screen {
   --hero-screen-shift: 0px;
   position: absolute;
-  inset: 10vh 4vw 7vh 31vw;
+  inset: 7vh 3.8vw 5.6vh 38vw;
   z-index: 1;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -350,7 +354,7 @@ button {
 .hero-copy {
   position: relative;
   z-index: 3;
-  width: min(760px, 64vw);
+  width: min(620px, 46vw);
   opacity: var(--hero-copy-opacity);
   transform: translate3d(0, var(--hero-copy-shift), 0);
   transition: opacity 120ms linear;
@@ -358,7 +362,7 @@ button {
 }
 
 .frame-label {
-  margin: 0 0 28px;
+  margin: 0 0 20px;
   color: #aab0b7;
   font-size: 10px;
   font-weight: 500;
@@ -375,31 +379,40 @@ button {
 }
 
 .hero-copy h1 {
-  max-width: 920px;
-  font-size: clamp(64px, 8vw, 132px);
-  line-height: 0.98;
+  max-width: 650px;
+  font-size: clamp(56px, 6.1vw, 96px);
+  line-height: 0.96;
+}
+
+.hero-title-line {
+  display: block;
+}
+
+.hero-title-line--wide {
+  white-space: nowrap;
 }
 
 .hero-description {
-  max-width: 490px;
-  margin: 34px 0 0;
+  max-width: 430px;
+  margin: 22px 0 0;
   color: #b2b6bc;
-  font-size: 16px;
-  line-height: 1.9;
+  font-size: 15px;
+  line-height: 1.72;
 }
 
 .hero-actions {
   display: flex;
   gap: 12px;
-  margin-top: 36px;
+  margin-top: 26px;
 }
 
 .capabilities-section {
   display: grid;
+  min-height: clamp(560px, 72svh, 680px);
   grid-template-columns: minmax(0, 0.84fr) minmax(520px, 1.16fr);
   align-items: center;
-  gap: clamp(44px, 8vw, 132px);
-  padding: 14vh clamp(22px, 5vw, 86px);
+  gap: clamp(32px, 5.2vw, 76px);
+  padding: var(--poster-section-y) var(--poster-section-x);
   background: var(--color-stage);
 }
 
@@ -438,8 +451,8 @@ button {
 }
 
 .section-heading h2 {
-  font-size: clamp(42px, 5.4vw, 84px);
-  line-height: 1.12;
+  font-size: clamp(36px, 4.2vw, 64px);
+  line-height: 1.08;
 }
 
 .capability-panels {
@@ -455,8 +468,8 @@ button {
 
 .capability-card {
   position: relative;
-  min-height: 440px;
-  padding: 34px 24px 30px;
+  min-height: 320px;
+  padding: 26px 20px 24px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background:
@@ -479,7 +492,7 @@ button {
 }
 
 .capability-panel:nth-child(2) .capability-card {
-  transform: translateY(-38px);
+  transform: translateY(-24px);
 }
 
 .capability-card__index {
@@ -489,7 +502,7 @@ button {
 }
 
 .capability-card h3 {
-  margin: 38px 0 18px;
+  margin: 28px 0 14px;
   color: var(--color-ink);
   font-size: 22px;
   font-weight: 500;
@@ -500,14 +513,14 @@ button {
   margin: 0;
   color: #a8adb4;
   font-size: 14px;
-  line-height: 1.8;
+  line-height: 1.66;
 }
 
 .capability-card small {
   position: absolute;
-  right: 24px;
-  bottom: 26px;
-  left: 24px;
+  right: 20px;
+  bottom: 22px;
+  left: 20px;
   color: #7f858d;
   font-size: 10px;
   letter-spacing: 0.12em;
@@ -516,13 +529,13 @@ button {
 .process-section {
   position: relative;
   display: grid;
-  min-height: 100svh;
+  min-height: clamp(760px, 108svh, 980px);
   grid-template-columns: minmax(0, 0.86fr) minmax(560px, 1.14fr);
   align-items: center;
-  gap: clamp(48px, 7vw, 128px);
+  gap: clamp(36px, 5.5vw, 82px);
   overflow: hidden;
   isolation: isolate;
-  padding: 15vh clamp(22px, 5vw, 86px) 16vh;
+  padding: var(--poster-section-y) var(--poster-section-x);
   background:
     radial-gradient(
       ellipse at 18% 18%,
@@ -555,7 +568,7 @@ button {
 .process-section::after {
   content: "";
   position: absolute;
-  inset: 10vh clamp(22px, 5vw, 86px);
+  inset: var(--poster-rule-inset) var(--poster-section-x);
   z-index: 1;
   pointer-events: none;
   border-top: 1px solid rgba(255, 255, 255, 0.11);
@@ -581,7 +594,7 @@ button {
   display: block;
   width: min(280px, 52vw);
   height: 1px;
-  margin-top: 38px;
+  margin-top: 28px;
   background: linear-gradient(90deg, rgba(185, 226, 248, 0.58), transparent);
 }
 
@@ -589,14 +602,14 @@ button {
   position: relative;
   z-index: 2;
   display: grid;
-  gap: 18px;
-  padding: 18px 0 18px 64px;
+  gap: 12px;
+  padding: 10px 0 10px 54px;
 }
 
 .timeline-light {
   position: absolute;
-  top: 28px;
-  bottom: 28px;
+  top: 20px;
+  bottom: 20px;
   left: 18px;
   width: 1px;
   overflow: hidden;
@@ -631,12 +644,12 @@ button {
 .process-step__card {
   position: relative;
   display: grid;
-  min-height: 156px;
-  grid-template-columns: minmax(150px, 0.42fr) minmax(0, 1fr);
+  min-height: 128px;
+  grid-template-columns: minmax(128px, 0.36fr) minmax(0, 1fr);
   align-items: center;
-  gap: clamp(18px, 2.6vw, 30px);
+  gap: clamp(14px, 2vw, 22px);
   overflow: hidden;
-  padding: 14px 22px 14px 14px;
+  padding: 10px 18px 10px 10px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   background:
     linear-gradient(
@@ -663,7 +676,7 @@ button {
 
 .process-step__image {
   position: relative;
-  min-height: 128px;
+  min-height: 108px;
   overflow: hidden;
   background: #06080a;
 }
@@ -696,9 +709,9 @@ button {
 }
 
 .process-step__card h3 {
-  margin: 20px 0 0;
+  margin: 14px 0 0;
   color: var(--color-ink);
-  font-size: clamp(24px, 3vw, 42px);
+  font-size: clamp(21px, 2.2vw, 32px);
   font-weight: 500;
   letter-spacing: -0.035em;
   line-height: 1.06;
@@ -708,10 +721,10 @@ button {
   position: absolute;
   z-index: 2;
   top: 50%;
-  left: -64px;
+  left: -54px;
   display: grid;
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   place-items: center;
   border: 1px solid rgba(185, 226, 248, 0.46);
   border-radius: 999px;
@@ -727,10 +740,10 @@ button {
 
 .gallery-section {
   position: relative;
-  min-height: 100svh;
+  min-height: clamp(760px, 96svh, 940px);
   overflow: hidden;
   isolation: isolate;
-  padding: 15vh clamp(22px, 5vw, 86px) 16vh;
+  padding: var(--poster-section-y) var(--poster-section-x);
   background:
     radial-gradient(
       ellipse at 72% 18%,
@@ -770,7 +783,7 @@ button {
 .gallery-section::after {
   content: "";
   position: absolute;
-  inset: 10vh clamp(22px, 5vw, 86px);
+  inset: var(--poster-rule-inset) var(--poster-section-x);
   z-index: 1;
   pointer-events: none;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -784,8 +797,8 @@ button {
   max-width: none;
   grid-template-columns: minmax(0, 0.72fr) minmax(280px, 0.28fr);
   align-items: end;
-  gap: clamp(28px, 6vw, 88px);
-  margin-bottom: clamp(42px, 7vw, 92px);
+  gap: clamp(22px, 4vw, 54px);
+  margin-bottom: clamp(30px, 4.8vw, 58px);
 }
 
 .gallery-heading .frame-label {
@@ -807,8 +820,8 @@ button {
   z-index: 2;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  grid-auto-rows: clamp(86px, 7.2vw, 128px);
-  gap: clamp(12px, 1.4vw, 22px);
+  grid-auto-rows: clamp(72px, 6.2vw, 104px);
+  gap: clamp(10px, 1.2vw, 18px);
 }
 
 .gallery-frame {
@@ -848,7 +861,7 @@ button {
 .gallery-item {
   position: relative;
   height: 100%;
-  min-height: 240px;
+  min-height: 0;
   margin: 0;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -894,7 +907,7 @@ button {
   right: 0;
   bottom: 0;
   left: 0;
-  padding: clamp(18px, 2vw, 30px);
+  padding: clamp(16px, 1.6vw, 22px);
   background: linear-gradient(
     180deg,
     transparent,
@@ -911,7 +924,7 @@ button {
 .gallery-item figcaption h3 {
   margin: 0;
   color: var(--color-ink);
-  font-size: clamp(20px, 2.25vw, 34px);
+  font-size: clamp(18px, 1.8vw, 27px);
   font-weight: 500;
   letter-spacing: -0.035em;
   line-height: 1.05;
@@ -920,11 +933,11 @@ button {
 .gallery-item figcaption p {
   max-width: 28rem;
   max-height: 0;
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   overflow: hidden;
   color: #aab0b7;
   font-size: 13px;
-  line-height: 1.75;
+  line-height: 1.58;
   opacity: 0;
   transform: translateY(8px);
   transition:
@@ -960,13 +973,13 @@ button {
 .membership-section {
   position: relative;
   display: flex;
-  min-height: 100svh;
+  min-height: clamp(540px, 68svh, 660px);
   flex-direction: column;
   justify-content: space-between;
-  gap: clamp(56px, 8vw, 120px);
+  gap: clamp(30px, 5vw, 64px);
   overflow: hidden;
   isolation: isolate;
-  padding: 15vh clamp(22px, 5vw, 86px) 16vh;
+  padding: var(--poster-section-y) var(--poster-section-x);
   background:
     radial-gradient(
       ellipse at 16% 18%,
@@ -1006,7 +1019,7 @@ button {
 .membership-section::after {
   content: "";
   position: absolute;
-  inset: 10vh clamp(22px, 5vw, 86px);
+  inset: var(--poster-rule-inset) var(--poster-section-x);
   z-index: 1;
   pointer-events: none;
   border-top: 1px solid rgba(255, 255, 255, 0.11);
@@ -1039,7 +1052,7 @@ button {
   display: grid;
   grid-template-columns: minmax(260px, 0.34fr) minmax(0, 0.66fr);
   align-items: end;
-  gap: clamp(30px, 5vw, 82px);
+  gap: clamp(24px, 4vw, 56px);
 }
 
 .membership-access {
@@ -1048,7 +1061,7 @@ button {
 
 .membership-access__eyebrow,
 .upgrade-dialog__eyebrow {
-  margin: 0 0 18px;
+  margin: 0 0 14px;
   color: rgba(185, 226, 248, 0.74);
   font-size: 10px;
   font-weight: 500;
@@ -1057,10 +1070,10 @@ button {
 }
 
 .membership-access p:not(.membership-access__eyebrow) {
-  margin: 0 0 28px;
+  margin: 0 0 22px;
   color: #adb3bb;
   font-size: 14px;
-  line-height: 1.85;
+  line-height: 1.66;
 }
 
 .membership-benefits {
@@ -1093,11 +1106,11 @@ button {
 .membership-benefit__card {
   position: relative;
   display: flex;
-  min-height: 286px;
+  min-height: 218px;
   height: 100%;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 30px 24px 28px;
+  padding: 26px 22px 24px;
 }
 
 .membership-benefit__card::before {
@@ -1114,11 +1127,11 @@ button {
 
 .membership-benefit__icon {
   position: absolute;
-  top: 28px;
-  left: 24px;
+  top: 24px;
+  left: 22px;
   display: grid;
-  width: 46px;
-  height: 46px;
+  width: 40px;
+  height: 40px;
   place-items: center;
   border: 1px solid rgba(185, 226, 248, 0.38);
   border-radius: 999px;
@@ -1129,29 +1142,29 @@ button {
 
 .membership-benefit__card h3 {
   max-width: 12rem;
-  margin: 0 0 16px;
+  margin: 0 0 12px;
   color: var(--color-ink);
   font-size: clamp(21px, 2.15vw, 32px);
   font-weight: 500;
   letter-spacing: -0.035em;
-  line-height: 1.14;
+  line-height: 1.08;
 }
 
 .membership-benefit__card p {
   margin: 0;
   color: #9da3ab;
   font-size: 13px;
-  line-height: 1.8;
+  line-height: 1.58;
 }
 
 .final-cta-section {
   position: relative;
   display: grid;
-  min-height: 100svh;
+  min-height: clamp(480px, 64svh, 620px);
   place-items: center;
   overflow: hidden;
   isolation: isolate;
-  padding: 15vh clamp(22px, 5vw, 86px);
+  padding: var(--poster-section-y-tight) var(--poster-section-x);
   background: #020303;
   text-align: center;
 }
@@ -1184,7 +1197,7 @@ button {
 .final-cta-section::after {
   content: "";
   position: absolute;
-  inset: 10vh clamp(22px, 5vw, 86px);
+  inset: var(--poster-rule-inset) var(--poster-section-x);
   z-index: 1;
   pointer-events: none;
   border-top: 1px solid rgba(255, 255, 255, 0.11);
@@ -1209,15 +1222,15 @@ button {
 }
 
 .final-cta-content .frame-label {
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 
 .final-cta-content h2 {
-  max-width: 880px;
-  margin: 0 0 38px;
+  max-width: 760px;
+  margin: 0 0 26px;
   color: var(--color-ink);
   font-family: var(--font-serif), "Songti SC", "SimSun", serif;
-  font-size: clamp(48px, 7vw, 108px);
+  font-size: clamp(42px, 5.2vw, 78px);
   font-weight: 500;
   letter-spacing: -0.055em;
   line-height: 1.04;
@@ -1484,6 +1497,12 @@ button {
 }
 
 @media (max-width: 767px) {
+  .cinematic-page {
+    --poster-section-y: 84px;
+    --poster-section-y-tight: 72px;
+    --poster-rule-inset: 58px;
+  }
+
   .cinematic-header__desktop,
   .cinematic-nav {
     display: none;
@@ -1500,8 +1519,8 @@ button {
 
   .hero-section {
     align-items: flex-start;
-    min-height: 100svh;
-    padding: 132px clamp(20px, 6vw, 32px) 46vh;
+    min-height: 88svh;
+    padding: 112px clamp(20px, 6vw, 32px) 38vh;
   }
 
   .hero-section::after {
@@ -1515,28 +1534,35 @@ button {
   }
 
   .hero-copy h1 {
-    font-size: clamp(44px, 13vw, 58px);
+    font-size: clamp(39px, 11.8vw, 52px);
+  }
+
+  .hero-title-line--wide {
+    white-space: normal;
   }
 
   .hero-description {
     max-width: 30rem;
-    font-size: 15px;
+    margin-top: 18px;
+    font-size: 14px;
+    line-height: 1.68;
   }
 
   .hero-screen {
-    inset: 48vh -16vw 5vh 16vw;
+    inset: 46vh -16vw 4vh 18vw;
     transform: none;
   }
 
   .hero-actions {
     flex-direction: column;
     align-items: stretch;
+    margin-top: 24px;
   }
 
   .capabilities-section {
     grid-template-columns: 1fr;
-    gap: 54px;
-    padding: 110px clamp(20px, 6vw, 32px);
+    gap: 38px;
+    padding: var(--poster-section-y) clamp(20px, 6vw, 32px);
   }
 
   .capabilities-section::before {
@@ -1555,23 +1581,24 @@ button {
   }
 
   .section-heading h2 {
-    font-size: clamp(40px, 11vw, 56px);
+    font-size: clamp(34px, 9.6vw, 48px);
   }
 
   .capability-panels {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .capability-card,
   .capability-panel:nth-child(2) .capability-card {
-    min-height: 310px;
+    min-height: 238px;
     transform: none;
   }
 
   .process-section {
     grid-template-columns: 1fr;
-    gap: 58px;
-    padding: 112px clamp(20px, 6vw, 32px);
+    gap: 38px;
+    padding: var(--poster-section-y) clamp(20px, 6vw, 32px);
   }
 
   .process-section::before {
@@ -1590,7 +1617,7 @@ button {
   }
 
   .process-section::after {
-    inset: 82px clamp(20px, 6vw, 32px);
+    inset: var(--poster-rule-inset) clamp(20px, 6vw, 32px);
   }
 
   .projector-image {
@@ -1598,12 +1625,12 @@ button {
   }
 
   .process-heading::after {
-    margin-top: 30px;
+    margin-top: 22px;
   }
 
   .process-timeline {
-    gap: 16px;
-    padding: 10px 0 10px 50px;
+    gap: 10px;
+    padding: 8px 0 8px 46px;
   }
 
   .timeline-light {
@@ -1615,27 +1642,27 @@ button {
   .process-step__card {
     min-height: 0;
     grid-template-columns: 1fr;
-    gap: 18px;
-    padding: 12px 12px 24px;
+    gap: 14px;
+    padding: 10px 10px 18px;
   }
 
   .process-step__image {
-    min-height: clamp(160px, 48vw, 240px);
+    min-height: clamp(132px, 38vw, 190px);
   }
 
   .process-step__copy {
-    padding-inline: 6px;
+    padding-inline: 4px;
   }
 
   .process-node {
-    left: -50px;
-    width: 34px;
-    height: 34px;
+    left: -46px;
+    width: 30px;
+    height: 30px;
   }
 
   .gallery-section {
     min-height: auto;
-    padding: 112px clamp(20px, 6vw, 32px);
+    padding: var(--poster-section-y) clamp(20px, 6vw, 32px);
   }
 
   .gallery-section::before {
@@ -1654,23 +1681,23 @@ button {
   }
 
   .gallery-section::after {
-    inset: 82px clamp(20px, 6vw, 32px);
+    inset: var(--poster-rule-inset) clamp(20px, 6vw, 32px);
   }
 
   .gallery-heading {
     display: block;
-    margin-bottom: 42px;
+    margin-bottom: 30px;
   }
 
   .gallery-heading .frame-label {
-    margin: 0 0 28px;
+    margin: 0 0 20px;
     text-align: left;
   }
 
   .editorial-gallery {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-auto-rows: clamp(160px, 48vw, 240px);
-    gap: 12px;
+    grid-auto-rows: clamp(128px, 39vw, 190px);
+    gap: 10px;
   }
 
   .gallery-frame.gallery-item--portrait,
@@ -1692,13 +1719,13 @@ button {
   }
 
   .gallery-item figcaption {
-    padding: 18px;
+    padding: 14px;
     opacity: 1;
     transform: none;
   }
 
   .gallery-item figcaption h3 {
-    font-size: clamp(19px, 6vw, 28px);
+    font-size: clamp(17px, 5.2vw, 24px);
   }
 
   .gallery-item figcaption p {
@@ -1710,8 +1737,8 @@ button {
 
   .membership-section {
     min-height: auto;
-    gap: 56px;
-    padding: 112px clamp(20px, 6vw, 32px);
+    gap: 36px;
+    padding: var(--poster-section-y) clamp(20px, 6vw, 32px);
   }
 
   .membership-section::before {
@@ -1730,7 +1757,7 @@ button {
   }
 
   .membership-section::after {
-    inset: 82px clamp(20px, 6vw, 32px);
+    inset: var(--poster-rule-inset) clamp(20px, 6vw, 32px);
   }
 
   .membership-background {
@@ -1740,7 +1767,7 @@ button {
   .membership-content {
     grid-template-columns: 1fr;
     align-items: stretch;
-    gap: 34px;
+    gap: 24px;
   }
 
   .membership-access {
@@ -1757,8 +1784,8 @@ button {
   }
 
   .membership-benefit__card {
-    min-height: 226px;
-    padding: 28px 24px;
+    min-height: 178px;
+    padding: 24px 22px;
   }
 
   .membership-benefit__card h3 {
@@ -1766,8 +1793,8 @@ button {
   }
 
   .final-cta-section {
-    min-height: 100svh;
-    padding: 118px clamp(20px, 6vw, 32px);
+    min-height: 78svh;
+    padding: var(--poster-section-y) clamp(20px, 6vw, 32px);
   }
 
   .final-cta-section::before {
@@ -1786,7 +1813,7 @@ button {
   }
 
   .final-cta-section::after {
-    inset: 82px clamp(20px, 6vw, 32px);
+    inset: var(--poster-rule-inset) clamp(20px, 6vw, 32px);
   }
 
   .final-cta-background {
@@ -1795,8 +1822,8 @@ button {
   }
 
   .final-cta-content h2 {
-    margin-bottom: 32px;
-    font-size: clamp(46px, 13vw, 64px);
+    margin-bottom: 24px;
+    font-size: clamp(38px, 11vw, 56px);
   }
 
   .final-cta-content .cinematic-button {
@@ -1828,7 +1855,7 @@ button {
 @media (max-width: 520px) {
   .editorial-gallery {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-auto-rows: clamp(148px, 44vw, 220px);
+    grid-auto-rows: clamp(118px, 36vw, 170px);
   }
 
   .gallery-frame.gallery-item--portrait,

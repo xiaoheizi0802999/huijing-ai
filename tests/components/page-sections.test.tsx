@@ -9,9 +9,14 @@ afterEach(() => {
 it("renders the cinematic landing page shell", () => {
   render(<Home />)
 
-  expect(
-    screen.getByRole("heading", { name: /像导演一样\s*生成你的视觉大片/ }),
-  ).toBeInTheDocument()
+  const heroHeading = screen.getByRole("heading", {
+    name: /像导演一样\s*生成你的视觉大片/,
+  })
+
+  expect(heroHeading).toBeInTheDocument()
+  expect(within(heroHeading).getByText("像导演一样")).toBeInTheDocument()
+  expect(within(heroHeading).getByText("生成你的视觉大片")).toBeInTheDocument()
+  expect(heroHeading.querySelectorAll("span")).toHaveLength(2)
 })
 
 it("renders all six landing sections in cinematic order", () => {

@@ -127,9 +127,10 @@ export function HeroSection() {
         </Reveal>
         <Reveal delay={110}>
           <h1 id="hero-title">
-            像导演一样
-            <br />
-            生成你的视觉大片
+            <span className="hero-title-line">像导演一样</span>
+            <span className="hero-title-line hero-title-line--wide">
+              生成你的视觉大片
+            </span>
           </h1>
         </Reveal>
         <Reveal delay={220}>

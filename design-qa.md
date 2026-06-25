@@ -36,8 +36,8 @@ focused region comparison evidence:
 
 No P0/P1/P2 issues remain.
 
-- Fonts and typography: Passed. The implementation uses a high-contrast serif display system with condensed letter spacing and strong hierarchy. The final CTA was patched during QA so the mobile brand statement breaks into two intentional lines instead of leaving an orphaned character at the end of the first line.
-- Spacing and layout rhythm: Passed. The implementation is taller than the source montage because it is a real high-scroll landing page rather than a compressed reference board. Each chapter keeps poster-like breathing room, thin separators, and stable desktop/mobile alignment.
+- Fonts and typography: Passed after P1 density iteration. The implementation uses a high-contrast serif display system with condensed letter spacing and strong hierarchy. The hero headline now uses explicit magazine-style title lines (`像导演一样` / `生成你的视觉大片`) so it no longer creates orphan characters or browser-dependent line breaks. The final CTA keeps its controlled two-line statement.
+- Spacing and layout rhythm: Passed after P1 density iteration. Section heights, heading margins, card heights, gallery row rhythm, membership cards, and final CTA spacing were tightened to better match the supplied P1 poster reference. The desktop full-page capture moved from 6169px tall to 4661px at 1440px width; the source reference scales to roughly 4303px at the same width, so the implementation now reads much closer to the visual稿 while preserving usable responsive sections.
 - Colors and visual tokens: Passed. The black/deep-gray/silver palette, cold blue highlights, restrained borders, and low-glow surfaces match the selected Dark Light direction.
 - Image quality and asset fidelity: Passed. All major visible art uses real generated assets under `public/cinematic/`; there are no fake placeholder blocks, emoji, handmade SVG illustrations, or CSS-art replacements. Crops are dark, low-saturation, and cinematic.
 - Copy and content: Passed. The six requested chapters, credit mechanism copy, upgrade placeholder, final brand statement, and `/generate` preview route are present and coherent.
@@ -47,7 +47,10 @@ No P0/P1/P2 issues remain.
 
 - Fixed the mobile final CTA heading by splitting `每一次生成，都是一帧电影。` into two explicit display lines: `每一次生成，` and `都是一帧电影。`
 - Added a regression expectation in `tests/components/page-sections.test.tsx` so the final CTA keeps this controlled two-line structure.
-- Re-captured desktop, mobile, dialog, and mobile menu evidence after the patch.
+- Tightened the P1 visual density across desktop and mobile by reducing oversized section padding, headline margins, card heights, process card rhythm, gallery rows, membership card height, and final CTA whitespace.
+- Added `tests/visual-density.test.ts` as a compact poster-rhythm contract so the page does not regress to overly large whitespace.
+- Fixed the hero title line break by replacing browser-dependent `<br />` wrapping with two explicit `hero-title-line` spans and desktop no-orphan whitespace handling.
+- Re-captured desktop full-page, desktop hero, mobile full-page, mobile hero, mobile bottom, and comparison evidence after the P1 density patch.
 
 ## Open Questions
 
@@ -60,7 +63,8 @@ No P0/P1/P2 issues remain.
 - [x] Final CTA focused comparison captured and reviewed.
 - [x] Mobile hero, final CTA, and menu evidence captured and reviewed.
 - [x] Upgrade dialog evidence captured and reviewed.
-- [x] P2 mobile title wrapping issue fixed and re-verified.
+- [x] P2 mobile final CTA wrapping issue fixed and re-verified.
+- [x] P1 text/whitespace density feedback addressed and re-verified against the reference comparison.
 
 ## Follow-up Polish
 
