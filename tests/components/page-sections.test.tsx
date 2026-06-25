@@ -46,6 +46,15 @@ it("keeps homepage creation links pointed at the generate route", () => {
   })
 })
 
+it("surfaces the generation history route from the homepage navigation", () => {
+  render(<Home />)
+
+  expect(screen.getByRole("link", { name: "历史影像" })).toHaveAttribute(
+    "href",
+    "/generate/history",
+  )
+})
+
 it("renders the creation process and gallery anchors", () => {
   const { container } = render(<Home />)
 

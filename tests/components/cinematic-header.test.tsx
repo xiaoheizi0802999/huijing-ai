@@ -43,6 +43,10 @@ it("renders the brand, desktop navigation, and creation call to action", () => {
     "href",
     "#membership",
   )
+  expect(screen.getByRole("link", { name: "历史影像" })).toHaveAttribute(
+    "href",
+    "/generate/history",
+  )
   expect(screen.getByRole("link", { name: "开始创作" })).toHaveAttribute(
     "href",
     "/generate",
@@ -122,6 +126,7 @@ it("closes the mobile menu and restores body overflow after link navigation", ()
     "#gallery",
     "#process",
     "#membership",
+    "/generate/history",
     "/generate",
   ])
 

@@ -19,6 +19,10 @@ it("renders a Seedream creation studio that visually belongs to the cinematic sy
   expect(screen.getByLabelText("画幅")).toBeInTheDocument()
   expect(screen.getByLabelText("清晰度")).toBeInTheDocument()
   expect(screen.getByRole("button", { name: "生成图片" })).toBeInTheDocument()
+  expect(screen.getByRole("link", { name: "历史影像" })).toHaveAttribute(
+    "href",
+    "/generate/history",
+  )
   expect(screen.getByText("FRAME OUTPUT / WAITING FOR LIGHT")).toBeInTheDocument()
   expect(container.querySelector(".seedream-studio")).toBeInTheDocument()
 })

@@ -1344,6 +1344,12 @@ button {
   color: #ffffff;
 }
 
+.seedream-studio__links {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 2vw, 20px);
+}
+
 .seedream-studio__copy {
   max-width: 920px;
 }
@@ -2225,6 +2231,12 @@ button {
 
   .seedream-studio__nav {
     align-items: flex-start;
+  }
+
+  .seedream-studio__links {
+    align-items: flex-end;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .seedream-studio__brand {

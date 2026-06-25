@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowLeft, Sparkle } from "@phosphor-icons/react"
+import { ArrowLeft, ClockCounterClockwise, Sparkle } from "@phosphor-icons/react"
 import Link from "next/link"
 import { type FormEvent, useMemo, useState } from "react"
 import { CinematicButton } from "@/components/cinematic/cinematic-button"
@@ -96,10 +96,16 @@ export function GenerateStudio() {
         <Link className="seedream-studio__brand" href="/">
           绘境 <span>AI</span>
         </Link>
-        <Link className="seedream-studio__back" href="/">
-          <ArrowLeft aria-hidden="true" size={18} weight="thin" />
-          返回首页
-        </Link>
+        <div className="seedream-studio__links">
+          <Link className="seedream-studio__back" href="/generate/history">
+            <ClockCounterClockwise aria-hidden="true" size={18} weight="thin" />
+            历史影像
+          </Link>
+          <Link className="seedream-studio__back" href="/">
+            <ArrowLeft aria-hidden="true" size={18} weight="thin" />
+            返回首页
+          </Link>
+        </div>
       </div>
 
       <div className="seedream-studio__copy">
