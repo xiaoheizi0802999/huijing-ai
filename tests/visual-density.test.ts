@@ -14,3 +14,11 @@ it("keeps the landing page rhythm compact enough to match the P1 poster referenc
   expect(css).toContain("min-height: clamp(540px, 68svh, 660px);")
   expect(css).toContain("min-height: clamp(480px, 64svh, 620px);")
 })
+
+it("keeps the mobile hero title from orphaning the final character", () => {
+  expect(css).toContain(".hero-title-line--wide {\n  white-space: nowrap;\n}")
+  expect(css).not.toContain(
+    ".hero-title-line--wide {\n    white-space: normal;\n  }",
+  )
+  expect(css).toContain("font-size: clamp(34px, 9.4vw, 42px);")
+})

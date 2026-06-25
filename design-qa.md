@@ -49,7 +49,7 @@ No P0/P1/P2 issues remain.
 - Added a regression expectation in `tests/components/page-sections.test.tsx` so the final CTA keeps this controlled two-line structure.
 - Tightened the P1 visual density across desktop and mobile by reducing oversized section padding, headline margins, card heights, process card rhythm, gallery rows, membership card height, and final CTA whitespace.
 - Added `tests/visual-density.test.ts` as a compact poster-rhythm contract so the page does not regress to overly large whitespace.
-- Fixed the hero title line break by replacing browser-dependent `<br />` wrapping with two explicit `hero-title-line` spans and desktop no-orphan whitespace handling.
+- Fixed the hero title line break by replacing browser-dependent `<br />` wrapping with two explicit `hero-title-line` spans and no-orphan whitespace handling; re-captured mobile Hero after review feedback confirmed the final character no longer wraps alone.
 - Re-captured desktop full-page, desktop hero, mobile full-page, mobile hero, mobile bottom, and comparison evidence after the P1 density patch.
 
 ## Open Questions
@@ -65,6 +65,7 @@ No P0/P1/P2 issues remain.
 - [x] Upgrade dialog evidence captured and reviewed.
 - [x] P2 mobile final CTA wrapping issue fixed and re-verified.
 - [x] P1 text/whitespace density feedback addressed and re-verified against the reference comparison.
+- [x] P1 mobile Hero orphan-character feedback fixed and re-verified in `.design-qa/implementation-mobile-hero.png`.
 
 ## Follow-up Polish
 
