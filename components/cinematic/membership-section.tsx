@@ -2,7 +2,7 @@
 
 import { Gift, LockKey, Stack } from "@phosphor-icons/react"
 import Image from "next/image"
-import { useState } from "react"
+import { useEffect, useRef, useState, type MouseEvent } from "react"
 import { cinematicAssets } from "@/lib/landing-content"
 import { CinematicButton } from "./cinematic-button"
 import { Reveal } from "./reveal"
@@ -28,9 +28,29 @@ const membershipBenefits = [
 
 export function MembershipSection() {
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false)
+  const upgradeTriggerRef = useRef<HTMLButtonElement>(null)
+  const wasUpgradeOpen = useRef(false)
   const membershipAsset = cinematicAssets.membershipChair
 
-  function openUpgradeDialog() {
+  useEffect(() => {
+    if (isUpgradeOpen) {
+      wasUpgradeOpen.current = true
+      return
+    }
+
+    if (!wasUpgradeOpen.current) {
+      return
+    }
+
+    wasUpgradeOpen.current = false
+
+    if (upgradeTriggerRef.current?.isConnected) {
+      upgradeTriggerRef.current.focus()
+    }
+  }, [isUpgradeOpen])
+
+  function openUpgradeDialog(event: MouseEvent<HTMLButtonElement>) {
+    upgradeTriggerRef.current = event.currentTarget
     setIsUpgradeOpen(true)
   }
 

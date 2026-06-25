@@ -43,6 +43,14 @@ it("opens and dismisses the upgrade placeholder dialog accessibly", () => {
   expect(closeButton).toHaveFocus()
   expect(document.body.style.overflow).toBe("hidden")
 
+  fireEvent.keyDown(document, { key: "Tab" })
+
+  expect(closeButton).toHaveFocus()
+
+  fireEvent.keyDown(document, { key: "Tab", shiftKey: true })
+
+  expect(closeButton).toHaveFocus()
+
   fireEvent.click(dialog)
 
   expect(screen.getByRole("dialog", { name: "升级创作权限" })).toBeInTheDocument()
@@ -53,6 +61,7 @@ it("opens and dismisses the upgrade placeholder dialog accessibly", () => {
     screen.queryByRole("dialog", { name: "升级创作权限" }),
   ).not.toBeInTheDocument()
   expect(document.body.style.overflow).toBe("clip")
+  expect(upgradeButton).toHaveFocus()
 
   fireEvent.click(upgradeButton)
   fireEvent.click(screen.getByRole("button", { name: "关闭升级弹窗" }))
@@ -61,6 +70,7 @@ it("opens and dismisses the upgrade placeholder dialog accessibly", () => {
     screen.queryByRole("dialog", { name: "升级创作权限" }),
   ).not.toBeInTheDocument()
   expect(document.body.style.overflow).toBe("clip")
+  expect(upgradeButton).toHaveFocus()
 
   fireEvent.click(upgradeButton)
 
@@ -76,4 +86,5 @@ it("opens and dismisses the upgrade placeholder dialog accessibly", () => {
     screen.queryByRole("dialog", { name: "升级创作权限" }),
   ).not.toBeInTheDocument()
   expect(document.body.style.overflow).toBe("clip")
+  expect(upgradeButton).toHaveFocus()
 })
