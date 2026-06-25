@@ -75,7 +75,7 @@ it("renders the Seedream generation studio route without changing the homepage",
   ).toBeInTheDocument()
   expect(
     screen.getByRole("heading", {
-      name: "像导演一样调度 Doubao-Seedream-4.5",
+      name: "像导演一样调度",
     }),
   ).toBeInTheDocument()
   expect(screen.getByLabelText("主体描述")).toBeInTheDocument()

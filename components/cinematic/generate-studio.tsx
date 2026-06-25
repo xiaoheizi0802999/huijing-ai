@@ -29,7 +29,7 @@ export function GenerateStudio() {
     null,
   )
 
-  const buttonLabel = state === "loading" ? "正在调度镜头" : "生成电影画面"
+  const buttonLabel = state === "loading" ? "正在调度镜头" : "生成图片"
   const promptPreview = useMemo(
     () =>
       [
@@ -104,9 +104,7 @@ export function GenerateStudio() {
 
       <div className="seedream-studio__copy">
         <p className="frame-label">FRAME 07 / SEEDREAM GENERATION STUDIO</p>
-        <h1 id="seedream-studio-title">
-          像导演一样调度 Doubao-Seedream-4.5
-        </h1>
+        <h1 id="seedream-studio-title">像导演一样调度</h1>
         <p>
           选择画面类型、情绪与画幅，把普通想法转译成高对比、银白高光、电影叙事感的视觉大片。
         </p>
