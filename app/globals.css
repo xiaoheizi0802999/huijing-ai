@@ -1240,6 +1240,356 @@ button {
   display: block;
 }
 
+.seedream-page {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(
+      ellipse at 74% 16%,
+      rgba(185, 226, 248, 0.12),
+      transparent 32%
+    ),
+    radial-gradient(
+      ellipse at 12% 86%,
+      rgba(124, 187, 216, 0.08),
+      transparent 38%
+    ),
+    linear-gradient(180deg, #020303 0%, #080a0d 50%, #030405 100%);
+  color: var(--color-ink);
+}
+
+.seedream-page::before,
+.seedream-page::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.seedream-page::before {
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3, 4, 5, 0.92) 0%,
+      rgba(3, 4, 5, 0.42) 50%,
+      rgba(3, 4, 5, 0.88) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.055),
+      transparent 16%,
+      transparent 82%,
+      rgba(255, 255, 255, 0.04)
+    );
+}
+
+.seedream-page::after {
+  inset: clamp(58px, 7vh, 78px) clamp(20px, 4.8vw, 70px);
+  z-index: 1;
+  border-top: 1px solid rgba(255, 255, 255, 0.11);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.seedream-studio {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  min-height: 100svh;
+  grid-template-rows: auto auto 1fr;
+  gap: clamp(26px, 4vh, 44px);
+  padding: clamp(24px, 4vw, 54px) clamp(20px, 5vw, 76px)
+    clamp(40px, 5vw, 72px);
+}
+
+.seedream-studio__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.seedream-studio__brand,
+.seedream-studio__back {
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.seedream-studio__brand {
+  font-family: var(--font-serif), "Songti SC", "SimSun", serif;
+  font-size: 22px;
+  letter-spacing: 0.08em;
+}
+
+.seedream-studio__brand span {
+  color: var(--color-cold);
+  font-size: 0.68em;
+  letter-spacing: 0.16em;
+}
+
+.seedream-studio__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #b1b6bd;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  transition: color 240ms ease;
+}
+
+.seedream-studio__back:hover,
+.seedream-studio__back:focus-visible {
+  color: #ffffff;
+}
+
+.seedream-studio__copy {
+  max-width: 920px;
+}
+
+.seedream-studio__copy h1 {
+  max-width: 980px;
+  margin: 0;
+  color: var(--color-ink);
+  font-family: var(--font-serif), "Songti SC", "SimSun", serif;
+  font-size: clamp(44px, 5.8vw, 88px);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+}
+
+.seedream-studio__copy p:not(.frame-label) {
+  max-width: 600px;
+  margin: 22px 0 0;
+  color: #b0b6bd;
+  font-size: 15px;
+  line-height: 1.72;
+}
+
+.seedream-console {
+  display: grid;
+  grid-template-columns: minmax(340px, 0.42fr) minmax(0, 0.58fr);
+  gap: clamp(18px, 2.8vw, 34px);
+  align-items: stretch;
+}
+
+.seedream-console__panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.085),
+      rgba(255, 255, 255, 0.018) 38%,
+      rgba(185, 226, 248, 0.055)
+    ),
+    rgba(6, 8, 10, 0.72);
+  box-shadow:
+    0 28px 90px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.seedream-console__panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 22px auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(185, 226, 248, 0.62),
+    transparent
+  );
+}
+
+.seedream-console__panel--form {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  padding: clamp(22px, 3vw, 34px);
+}
+
+.seedream-console__inline {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.seedream-field {
+  display: grid;
+  gap: 10px;
+}
+
+.seedream-field span {
+  color: rgba(242, 243, 241, 0.72);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+}
+
+.seedream-field select,
+.seedream-field textarea {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0;
+  background: rgba(3, 4, 5, 0.62);
+  color: var(--color-ink);
+  font: inherit;
+  outline: 0;
+  transition:
+    border-color 240ms ease,
+    background 240ms ease,
+    box-shadow 240ms ease;
+}
+
+.seedream-field select {
+  height: 50px;
+  padding: 0 14px;
+}
+
+.seedream-field textarea {
+  min-height: 148px;
+  resize: vertical;
+  padding: 14px;
+  line-height: 1.7;
+}
+
+.seedream-field select:focus,
+.seedream-field textarea:focus {
+  border-color: rgba(185, 226, 248, 0.62);
+  background: rgba(3, 4, 5, 0.78);
+  box-shadow: 0 0 0 1px rgba(185, 226, 248, 0.12);
+}
+
+.seedream-console__actions {
+  display: grid;
+  gap: 12px;
+  margin-top: 2px;
+}
+
+.seedream-console__actions .cinematic-button {
+  width: 100%;
+}
+
+.seedream-console__actions .cinematic-button span {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.seedream-console__actions .cinematic-button:disabled {
+  cursor: progress;
+  opacity: 0.62;
+}
+
+.seedream-console__actions p,
+.seedream-console__error {
+  margin: 0;
+  color: #8e949c;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.seedream-console__error {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 14px;
+  color: #f0c8c8;
+}
+
+.seedream-console__panel--preview {
+  display: grid;
+  grid-template-rows: auto minmax(360px, 1fr) auto;
+  gap: 18px;
+  padding: clamp(18px, 2.2vw, 28px);
+}
+
+.seedream-preview__label,
+.seedream-prompt p {
+  margin: 0;
+  color: rgba(185, 226, 248, 0.78);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+}
+
+.seedream-preview {
+  position: relative;
+  display: grid;
+  min-height: 100%;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(
+      ellipse at 50% 24%,
+      rgba(242, 243, 241, 0.1),
+      transparent 28%
+    ),
+    linear-gradient(135deg, #080a0c 0%, #020303 100%);
+}
+
+.seedream-preview::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 18%),
+    linear-gradient(90deg, rgba(3, 4, 5, 0.56), transparent 48%, rgba(3, 4, 5, 0.52));
+}
+
+.seedream-preview img {
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  object-fit: cover;
+  filter: saturate(0.82) contrast(1.06) brightness(0.88);
+}
+
+.seedream-preview__empty {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 16px;
+  padding: 42px;
+  text-align: center;
+}
+
+.seedream-preview__empty span {
+  color: rgba(242, 243, 241, 0.44);
+  font-family: var(--font-serif), "Songti SC", "SimSun", serif;
+  font-size: clamp(36px, 5vw, 78px);
+  letter-spacing: -0.05em;
+  line-height: 0.92;
+}
+
+.seedream-preview__empty p {
+  margin: 0;
+  color: #8f959d;
+  font-size: 14px;
+}
+
+.seedream-prompt {
+  display: grid;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.seedream-prompt pre {
+  max-height: 132px;
+  overflow: auto;
+  margin: 0;
+  color: #aab0b8;
+  font-family: var(--font-sans), "PingFang SC", sans-serif;
+  font-size: 12px;
+  line-height: 1.72;
+  white-space: pre-wrap;
+}
+
 .generate-preview-page {
   position: relative;
   display: grid;
@@ -1845,6 +2195,57 @@ button {
   .upgrade-dialog {
     max-height: calc(100dvh - 36px);
     padding: 64px 24px 30px;
+  }
+}
+
+@media (max-width: 900px) {
+  .seedream-studio {
+    gap: 28px;
+    padding: 24px clamp(20px, 6vw, 32px) 44px;
+  }
+
+  .seedream-studio__copy h1 {
+    font-size: clamp(38px, 10vw, 58px);
+    line-height: 1.02;
+  }
+
+  .seedream-console {
+    grid-template-columns: 1fr;
+  }
+
+  .seedream-console__panel--preview {
+    grid-template-rows: auto minmax(320px, 64svh) auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .seedream-page::after {
+    inset: 64px clamp(20px, 6vw, 32px);
+  }
+
+  .seedream-studio__nav {
+    align-items: flex-start;
+  }
+
+  .seedream-studio__brand {
+    font-size: 20px;
+  }
+
+  .seedream-console__inline {
+    grid-template-columns: 1fr;
+  }
+
+  .seedream-console__panel--form,
+  .seedream-console__panel--preview {
+    padding: 20px;
+  }
+
+  .seedream-console__panel--preview {
+    grid-template-rows: auto minmax(280px, 54svh) auto;
+  }
+
+  .seedream-preview img {
+    min-height: 280px;
   }
 }
 
