@@ -1,6 +1,7 @@
 import { CapabilitiesSection } from "@/components/cinematic/capabilities-section"
 import { CinematicHeader } from "@/components/cinematic/cinematic-header"
 import { FilmGrain } from "@/components/cinematic/film-grain"
+import { FinalCtaSection } from "@/components/cinematic/final-cta-section"
 import { GallerySection } from "@/components/cinematic/gallery-section"
 import { HeroSection } from "@/components/cinematic/hero-section"
 import { MembershipSection } from "@/components/cinematic/membership-section"
@@ -17,6 +18,7 @@ export default function Home() {
         <ProcessSection />
         <GallerySection />
         <MembershipSection />
+        <FinalCtaSection />
       </main>
     </div>
   )
