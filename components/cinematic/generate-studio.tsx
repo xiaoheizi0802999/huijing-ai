@@ -21,12 +21,97 @@ type GenerateResponsePayload = Partial<GeneratedImage> & {
   message?: string
 }
 
+type GenerationHistoryItem = GeneratedImage & {
+  aspectRatio: string
+  createdAt: string
+  id: string
+  imageType: string
+  mood: string
+  quality: string
+  subject: string
+}
+
+const generationHistoryStorageKey = "huijing.seedream.history.v1"
+const maxGenerationHistoryItems = 24
+
 async function readGenerateResponse(response: Response) {
   try {
     return (await response.json()) as GenerateResponsePayload
   } catch {
     return null
   }
+}
+
+function isGenerationHistoryItem(value: unknown): value is GenerationHistoryItem {
+  if (!value || typeof value !== "object") {
+    return false
+  }
+
+  const item = value as Record<string, unknown>
+
+  return (
+    typeof item.id === "string" &&
+    typeof item.createdAt === "string" &&
+    typeof item.imageUrl === "string" &&
+    typeof item.prompt === "string" &&
+    typeof item.subject === "string" &&
+    typeof item.imageType === "string" &&
+    typeof item.mood === "string" &&
+    typeof item.aspectRatio === "string" &&
+    typeof item.quality === "string"
+  )
+}
+
+function readGenerationHistory() {
+  if (typeof window === "undefined") {
+    return []
+  }
+
+  try {
+    const storedHistory = window.localStorage.getItem(
+      generationHistoryStorageKey,
+    )
+    const parsedHistory: unknown = storedHistory ? JSON.parse(storedHistory) : []
+
+    return Array.isArray(parsedHistory)
+      ? parsedHistory.filter(isGenerationHistoryItem)
+      : []
+  } catch {
+    return []
+  }
+}
+
+function createGenerationHistoryId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID()
+  }
+
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
+function recordGenerationHistory(item: Omit<GenerationHistoryItem, "createdAt" | "id">) {
+  if (typeof window === "undefined") {
+    return
+  }
+
+  const nextItem: GenerationHistoryItem = {
+    ...item,
+    createdAt: new Date().toISOString(),
+    id: createGenerationHistoryId(),
+  }
+  const previousHistory = readGenerationHistory()
+  const nextHistory = [nextItem, ...previousHistory]
+    .filter(
+      (historyItem, index, history) =>
+        history.findIndex((currentItem) => currentItem.id === historyItem.id) ===
+        index,
+    )
+    .slice(0, maxGenerationHistoryItems)
+
+  window.localStorage.setItem(
+    generationHistoryStorageKey,
+    JSON.stringify(nextHistory),
+  )
 }
 
 export function GenerateStudio() {
@@ -93,6 +178,15 @@ export function GenerateStudio() {
       setGeneratedImage({
         imageUrl: payload.imageUrl,
         prompt: payload.prompt,
+      })
+      recordGenerationHistory({
+        aspectRatio,
+        imageType,
+        imageUrl: payload.imageUrl,
+        mood,
+        prompt: payload.prompt,
+        quality,
+        subject: subject.trim(),
       })
       setState("success")
     } catch (caughtError) {
