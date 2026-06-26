@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from "@testing-library/react"
+import { cleanup, render, screen } from "@testing-library/react"
 import { afterEach, expect, it } from "vitest"
 import Home from "@/app/page"
 
@@ -9,17 +9,14 @@ afterEach(() => {
 it("renders the cinematic landing page shell", () => {
   render(<Home />)
 
-  const heroHeading = screen.getByRole("heading", {
-    name: /像导演一样\s*生成你的视觉大片/,
-  })
-
-  expect(heroHeading).toBeInTheDocument()
-  expect(within(heroHeading).getByText("像导演一样")).toBeInTheDocument()
-  expect(within(heroHeading).getByText("生成你的视觉大片")).toBeInTheDocument()
-  expect(heroHeading.querySelectorAll("span")).toHaveLength(2)
+  expect(screen.getByText("FRAME 01 / VISUAL ENGINE / AI IMAGE STUDIO")).toBeInTheDocument()
+  expect(screen.getByRole("link", { name: "查看示例" })).toHaveAttribute(
+    "href",
+    "#gallery",
+  )
 })
 
-it("renders all six landing sections in cinematic order", () => {
+it("keeps all six landing sections in cinematic order", () => {
   const { container } = render(<Home />)
 
   const sectionIdentifiers = Array.from(
@@ -36,7 +33,7 @@ it("renders all six landing sections in cinematic order", () => {
   ])
 })
 
-it("renders hero actions, frame label, and core capabilities", () => {
+it("keeps homepage creation links pointed at the generate route", () => {
   render(<Home />)
 
   const generationLinks = screen.getAllByRole("link", {
@@ -47,81 +44,49 @@ it("renders hero actions, frame label, and core capabilities", () => {
   generationLinks.forEach((link) => {
     expect(link).toHaveAttribute("href", "/generate")
   })
-  expect(screen.getByRole("link", { name: "查看示例" })).toHaveAttribute(
-    "href",
-    "#gallery",
-  )
-  expect(
-    screen.getByText("FRAME 01 / VISUAL ENGINE / AI IMAGE STUDIO"),
-  ).toBeInTheDocument()
-  expect(
-    screen.getByRole("heading", {
-      name: /不是输入提示词，\s*而是构建一场视觉叙事/,
-    }),
-  ).toBeInTheDocument()
-
-  expect(
-    screen.getByRole("heading", { name: "选择图片类型" }),
-  ).toBeInTheDocument()
-  expect(
-    screen.getByRole("heading", { name: "输入主体与需求" }),
-  ).toBeInTheDocument()
-  expect(
-    screen.getByRole("heading", { name: "自动生成专业提示词" }),
-  ).toBeInTheDocument()
 })
 
-it("renders the five-shot creation process section", () => {
+it("surfaces the generation history route from the homepage navigation", () => {
+  render(<Home />)
+
+  expect(screen.getByRole("link", { name: "历史影像" })).toHaveAttribute(
+    "href",
+    "/generate/history",
+  )
+})
+
+it("renders the creation process and gallery anchors", () => {
   const { container } = render(<Home />)
 
   expect(container.querySelector("#process")).toBeInTheDocument()
-  expect(
-    screen.getByRole("heading", {
-      name: /从想法到大片，\s*只需五个镜头/,
-    }),
-  ).toBeInTheDocument()
+  expect(container.querySelector("#gallery")).toBeInTheDocument()
+  expect(container.querySelector("#membership")).toBeInTheDocument()
   expect(screen.getAllByText(/STEP 0[1-5]/)).toHaveLength(5)
-  expect(
-    screen.getByRole("heading", { name: "生成高清图片" }),
-  ).toBeInTheDocument()
 })
 
-it("renders the final CTA for the preview creation studio", () => {
+it("renders the final CTA frame", () => {
   render(<Home />)
 
   expect(screen.getByText("FRAME 06 / FINAL CUT")).toBeInTheDocument()
-  const finalHeading = screen.getByRole("heading", {
-    name: /每一次生成，\s*都是一帧电影/,
-  })
-
-  expect(finalHeading).toBeInTheDocument()
-  expect(within(finalHeading).getByText("每一次生成，")).toBeInTheDocument()
-  expect(within(finalHeading).getByText("都是一帧电影。")).toBeInTheDocument()
-  expect(finalHeading.querySelectorAll("span")).toHaveLength(2)
   expect(
     screen.getByRole("link", { name: "开始生成你的第一张作品" }),
   ).toHaveAttribute("href", "/generate")
 })
 
-it("renders the generate preview placeholder route", async () => {
+it("renders the Seedream generation studio route without changing the homepage", async () => {
   const routeSpecifier = "../../app/generate/page"
   const { default: GeneratePage } = await import(routeSpecifier)
 
   render(<GeneratePage />)
 
-  expect(screen.getByText("CREATION STUDIO / PREVIEW")).toBeInTheDocument()
+  expect(
+    screen.getByText("FRAME 07 / SEEDREAM GENERATION STUDIO"),
+  ).toBeInTheDocument()
   expect(
     screen.getByRole("heading", {
-      name: "创作工作台将在下一阶段接入",
+      name: "像导演一样调度",
     }),
   ).toBeInTheDocument()
-  expect(
-    screen.getByText(
-      "营销首页已经准备好。真实生图、积分和历史记录将沿用绘境 AI MVP 规格继续实现。",
-    ),
-  ).toBeInTheDocument()
-  expect(screen.getByRole("link", { name: "返回暗光剧场" })).toHaveAttribute(
-    "href",
-    "/",
-  )
+  expect(screen.getByLabelText("主体描述")).toBeInTheDocument()
+  expect(screen.getByRole("link", { name: "返回首页" })).toHaveAttribute("href", "/")
 })

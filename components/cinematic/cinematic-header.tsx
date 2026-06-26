@@ -8,6 +8,7 @@ const links = [
   { href: "#gallery", label: "作品" },
   { href: "#process", label: "创作流程" },
   { href: "#membership", label: "积分与会员" },
+  { href: "/generate/history", label: "历史影像" },
 ]
 
 const focusableSelector = [
