@@ -17,6 +17,18 @@ type GeneratedImage = {
   prompt: string
 }
 
+type GenerateResponsePayload = Partial<GeneratedImage> & {
+  message?: string
+}
+
+async function readGenerateResponse(response: Response) {
+  try {
+    return (await response.json()) as GenerateResponsePayload
+  } catch {
+    return null
+  }
+}
+
 export function GenerateStudio() {
   const [subject, setSubject] = useState("一位站在雨夜高楼边缘的未来城市导演")
   const [imageType, setImageType] = useState(imageTypes[0])
@@ -66,10 +78,16 @@ export function GenerateStudio() {
         },
         method: "POST",
       })
-      const payload = await response.json()
+      const payload = await readGenerateResponse(response)
 
       if (!response.ok) {
-        throw new Error(payload.message ?? "生成失败，请稍后再试。")
+        throw new Error(
+          payload?.message ?? "生成失败，服务暂时没有返回可读信息，请稍后再试。",
+        )
+      }
+
+      if (!payload?.imageUrl || !payload.prompt) {
+        throw new Error("生成失败，服务暂时没有返回图片，请稍后再试。")
       }
 
       setGeneratedImage({

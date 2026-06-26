@@ -83,14 +83,27 @@ export async function POST(request: Request) {
   }
 
   const payload = buildSeedreamPayload(input)
-  const providerResponse = await fetch(SEEDREAM_ENDPOINT, {
-    body: JSON.stringify(payload),
-    headers: {
-      authorization: `Bearer ${apiKey}`,
-      "content-type": "application/json",
-    },
-    method: "POST",
-  })
+  let providerResponse: Response
+
+  try {
+    providerResponse = await fetch(SEEDREAM_ENDPOINT, {
+      body: JSON.stringify(payload),
+      headers: {
+        authorization: `Bearer ${apiKey}`,
+        "content-type": "application/json",
+      },
+      method: "POST",
+    })
+  } catch {
+    return NextResponse.json(
+      {
+        code: "provider_network_error",
+        message:
+          "无法连接 Doubao-Seedream-4.5，请检查本地网络、代理或防火墙后重试。",
+      },
+      { status: 502 },
+    )
+  }
 
   const providerJson = await providerResponse.json().catch(() => null)
 
