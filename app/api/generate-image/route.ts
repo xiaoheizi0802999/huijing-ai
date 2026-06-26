@@ -109,6 +109,17 @@ export async function POST(request: Request) {
   const providerJson = await providerResponse.json().catch(() => null)
 
   if (!providerResponse.ok) {
+    if (providerResponse.status === 401 || providerResponse.status === 403) {
+      return NextResponse.json(
+        {
+          code: "provider_auth_error",
+          message:
+            "火山方舟 API Key 无效或没有开通 Doubao-Seedream-4.5，请检查 VOLCENGINE_API_KEY。",
+        },
+        { status: providerResponse.status },
+      )
+    }
+
     return NextResponse.json(
       {
         code: "provider_error",

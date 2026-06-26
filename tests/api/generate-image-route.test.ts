@@ -164,4 +164,40 @@ describe("/api/generate-image", () => {
         "无法连接 Doubao-Seedream-4.5，请检查本地网络、代理或防火墙后重试。",
     })
   })
+
+  it("returns a clear auth error when Ark rejects the API key", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        Response.json(
+          {
+            error: {
+              code: "Unauthorized",
+              message: "Unauthorized",
+            },
+          },
+          { status: 401 },
+        ),
+      ),
+    )
+    const { POST } = await import("@/app/api/generate-image/route")
+
+    const response = await POST(
+      createRequest({
+        aspectRatio: "16:9",
+        imageType: "电影海报",
+        mood: "黑色电影",
+        quality: "2K",
+        subject: "一位站在雨夜高楼边缘的未来城市导演",
+      }),
+    )
+    const body = await response.json()
+
+    expect(response.status).toBe(401)
+    expect(body).toEqual({
+      code: "provider_auth_error",
+      message:
+        "火山方舟 API Key 无效或没有开通 Doubao-Seedream-4.5，请检查 VOLCENGINE_API_KEY。",
+    })
+  })
 })
