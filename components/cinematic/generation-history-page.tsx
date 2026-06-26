@@ -3,89 +3,24 @@
 import {
   ArrowLeft,
   ClockCounterClockwise,
+  DownloadSimple,
   ImageSquare,
+  Trash,
 } from "@phosphor-icons/react"
 import Link from "next/link"
 import { useMemo, useState, useSyncExternalStore } from "react"
+import { downloadImage } from "@/lib/image-download"
+import {
+  generationHistoryStorageKey,
+  getGenerationHistorySnapshot,
+  getServerGenerationHistorySnapshot,
+  parseGenerationHistory,
+  removeGenerationHistoryItem,
+  subscribeToGenerationHistory,
+} from "@/lib/generation-history"
 import styles from "./generation-history-page.module.css"
 
-export const generationHistoryStorageKey = "huijing.seedream.history.v1"
-
-type GenerationHistoryItem = {
-  id: string
-  createdAt: string
-  imageUrl: string
-  prompt: string
-  subject: string
-  imageType: string
-  mood: string
-  aspectRatio: string
-  quality: string
-}
-
-function isGenerationHistoryItem(
-  value: unknown,
-): value is GenerationHistoryItem {
-  if (!value || typeof value !== "object") {
-    return false
-  }
-
-  const item = value as Record<string, unknown>
-  return (
-    typeof item.id === "string" &&
-    typeof item.createdAt === "string" &&
-    typeof item.imageUrl === "string" &&
-    typeof item.prompt === "string" &&
-    typeof item.subject === "string" &&
-    typeof item.imageType === "string" &&
-    typeof item.mood === "string" &&
-    typeof item.aspectRatio === "string" &&
-    typeof item.quality === "string"
-  )
-}
-
-function parseGenerationHistory(storedHistory: string) {
-  try {
-    if (!storedHistory) {
-      return []
-    }
-
-    const parsedHistory: unknown = JSON.parse(storedHistory)
-    if (!Array.isArray(parsedHistory)) {
-      return []
-    }
-
-    return parsedHistory.filter(isGenerationHistoryItem)
-  } catch {
-    return []
-  }
-}
-
-function subscribeToGenerationHistory(onStoreChange: () => void) {
-  if (typeof window === "undefined") {
-    return () => {}
-  }
-
-  window.addEventListener("storage", onStoreChange)
-  window.addEventListener("focus", onStoreChange)
-
-  return () => {
-    window.removeEventListener("storage", onStoreChange)
-    window.removeEventListener("focus", onStoreChange)
-  }
-}
-
-function getGenerationHistorySnapshot() {
-  if (typeof window === "undefined") {
-    return ""
-  }
-
-  return window.localStorage.getItem(generationHistoryStorageKey) ?? ""
-}
-
-function getServerGenerationHistorySnapshot() {
-  return ""
-}
+export { generationHistoryStorageKey }
 
 function formatFrameDate(value: string) {
   const date = new Date(value)
@@ -118,6 +53,27 @@ export function GenerationHistoryPage() {
     () => history.find((item) => item.id === selectedId) ?? history[0] ?? null,
     [history, selectedId],
   )
+
+  async function handleDownloadSelectedFrame() {
+    if (!selectedFrame) {
+      return
+    }
+
+    await downloadImage(
+      selectedFrame.imageUrl,
+      selectedFrame.subject,
+      selectedFrame.createdAt,
+    )
+  }
+
+  function handleDeleteSelectedFrame() {
+    if (!selectedFrame) {
+      return
+    }
+
+    removeGenerationHistoryItem(selectedFrame.id)
+    setSelectedId(null)
+  }
 
   return (
     <section
@@ -205,6 +161,28 @@ export function GenerationHistoryPage() {
                 <div>
                   <p>SELECTED FRAME</p>
                   <h2>{selectedFrame.subject}</h2>
+                </div>
+                <div className={styles.frameActions}>
+                  <button
+                    className={styles.frameAction}
+                    onClick={() => void handleDownloadSelectedFrame()}
+                    type="button"
+                  >
+                    <DownloadSimple
+                      aria-hidden="true"
+                      size={17}
+                      weight="thin"
+                    />
+                    下载图片
+                  </button>
+                  <button
+                    className={`${styles.frameAction} ${styles.frameActionDanger}`}
+                    onClick={handleDeleteSelectedFrame}
+                    type="button"
+                  >
+                    <Trash aria-hidden="true" size={17} weight="thin" />
+                    删除记录
+                  </button>
                 </div>
                 <dl>
                   <div>

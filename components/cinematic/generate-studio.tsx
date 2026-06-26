@@ -1,9 +1,16 @@
 "use client"
 
-import { ArrowLeft, ClockCounterClockwise, Sparkle } from "@phosphor-icons/react"
+import {
+  ArrowLeft,
+  ClockCounterClockwise,
+  DownloadSimple,
+  Sparkle,
+} from "@phosphor-icons/react"
 import Link from "next/link"
 import { type FormEvent, useMemo, useState } from "react"
 import { CinematicButton } from "@/components/cinematic/cinematic-button"
+import { downloadImage } from "@/lib/image-download"
+import { recordGenerationHistory } from "@/lib/generation-history"
 
 const imageTypes = ["电影海报", "人像大片", "产品摄影", "建筑场景", "概念艺术"]
 const moods = ["黑色电影", "奢侈品牌广告片", "艺术杂志封面", "暗黑幻想", "冷峻未来主义"]
@@ -21,97 +28,12 @@ type GenerateResponsePayload = Partial<GeneratedImage> & {
   message?: string
 }
 
-type GenerationHistoryItem = GeneratedImage & {
-  aspectRatio: string
-  createdAt: string
-  id: string
-  imageType: string
-  mood: string
-  quality: string
-  subject: string
-}
-
-const generationHistoryStorageKey = "huijing.seedream.history.v1"
-const maxGenerationHistoryItems = 24
-
 async function readGenerateResponse(response: Response) {
   try {
     return (await response.json()) as GenerateResponsePayload
   } catch {
     return null
   }
-}
-
-function isGenerationHistoryItem(value: unknown): value is GenerationHistoryItem {
-  if (!value || typeof value !== "object") {
-    return false
-  }
-
-  const item = value as Record<string, unknown>
-
-  return (
-    typeof item.id === "string" &&
-    typeof item.createdAt === "string" &&
-    typeof item.imageUrl === "string" &&
-    typeof item.prompt === "string" &&
-    typeof item.subject === "string" &&
-    typeof item.imageType === "string" &&
-    typeof item.mood === "string" &&
-    typeof item.aspectRatio === "string" &&
-    typeof item.quality === "string"
-  )
-}
-
-function readGenerationHistory() {
-  if (typeof window === "undefined") {
-    return []
-  }
-
-  try {
-    const storedHistory = window.localStorage.getItem(
-      generationHistoryStorageKey,
-    )
-    const parsedHistory: unknown = storedHistory ? JSON.parse(storedHistory) : []
-
-    return Array.isArray(parsedHistory)
-      ? parsedHistory.filter(isGenerationHistoryItem)
-      : []
-  } catch {
-    return []
-  }
-}
-
-function createGenerationHistoryId() {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return crypto.randomUUID()
-  }
-
-  return `${Date.now()}-${Math.random().toString(36).slice(2)}`
-}
-
-function recordGenerationHistory(item: Omit<GenerationHistoryItem, "createdAt" | "id">) {
-  if (typeof window === "undefined") {
-    return
-  }
-
-  const nextItem: GenerationHistoryItem = {
-    ...item,
-    createdAt: new Date().toISOString(),
-    id: createGenerationHistoryId(),
-  }
-  const previousHistory = readGenerationHistory()
-  const nextHistory = [nextItem, ...previousHistory]
-    .filter(
-      (historyItem, index, history) =>
-        history.findIndex((currentItem) => currentItem.id === historyItem.id) ===
-        index,
-    )
-    .slice(0, maxGenerationHistoryItems)
-
-  window.localStorage.setItem(
-    generationHistoryStorageKey,
-    JSON.stringify(nextHistory),
-  )
 }
 
 export function GenerateStudio() {
@@ -197,6 +119,14 @@ export function GenerateStudio() {
           : "生成失败，请稍后再试。",
       )
     }
+  }
+
+  async function handleDownloadGeneratedImage() {
+    if (!generatedImage) {
+      return
+    }
+
+    await downloadImage(generatedImage.imageUrl, subject.trim())
   }
 
   return (
@@ -320,7 +250,7 @@ export function GenerateStudio() {
             {generatedImage ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                alt="Doubao-Seedream-4.5 生成结果"
+                alt="AI 生成结果"
                 src={generatedImage.imageUrl}
               />
             ) : (
@@ -330,6 +260,18 @@ export function GenerateStudio() {
               </div>
             )}
           </div>
+
+          {generatedImage ? (
+            <div className="seedream-preview__actions">
+              <CinematicButton
+                onClick={() => void handleDownloadGeneratedImage()}
+                variant="outline"
+              >
+                <DownloadSimple aria-hidden="true" size={17} weight="thin" />
+                下载图片
+              </CinematicButton>
+            </div>
+          ) : null}
 
           <div className="seedream-prompt">
             <p>PROMPT / PROFESSIONAL VISUAL LANGUAGE</p>

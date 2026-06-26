@@ -43,7 +43,7 @@ it("submits the creative brief and renders the generated image", async () => {
   fireEvent.click(screen.getByRole("button", { name: "生成图片" }))
 
   await waitFor(() => {
-    expect(screen.getByAltText("Doubao-Seedream-4.5 生成结果")).toHaveAttribute(
+    expect(screen.getByAltText("AI 生成结果")).toHaveAttribute(
       "src",
       "https://example.com/final-frame.png",
     )

@@ -345,6 +345,58 @@
   line-height: 1.02;
 }
 
+.frameActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.frameAction {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.055), transparent 70%),
+    rgba(3, 4, 5, 0.42);
+  color: rgba(242, 243, 241, 0.86);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  padding: 0 16px;
+  transition:
+    border-color 240ms ease,
+    background 240ms ease,
+    color 240ms ease,
+    transform 240ms ease;
+}
+
+.frameAction:hover,
+.frameAction:focus-visible {
+  border-color: rgba(185, 226, 248, 0.54);
+  background:
+    linear-gradient(120deg, rgba(185, 226, 248, 0.11), transparent 70%),
+    rgba(10, 13, 16, 0.72);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.frameActionDanger {
+  border-color: rgba(240, 200, 200, 0.2);
+  color: rgba(240, 200, 200, 0.82);
+}
+
+.frameActionDanger:hover,
+.frameActionDanger:focus-visible {
+  border-color: rgba(240, 200, 200, 0.48);
+  background:
+    linear-gradient(120deg, rgba(240, 200, 200, 0.1), transparent 70%),
+    rgba(10, 13, 16, 0.72);
+}
+
 .frameDetails dl {
   display: grid;
   gap: 16px;
@@ -513,5 +565,9 @@
 
   .frameDetails {
     padding: 22px;
+  }
+
+  .frameAction {
+    flex: 1 1 140px;
   }
 }

@@ -1556,6 +1556,26 @@ button {
   filter: saturate(0.82) contrast(1.06) brightness(0.88);
 }
 
+.seedream-preview__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.seedream-preview__actions .cinematic-button {
+  min-height: 42px;
+  padding: 0 20px;
+  border-color: rgba(255, 255, 255, 0.18);
+  color: rgba(242, 243, 241, 0.86);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+
+.seedream-preview__actions .cinematic-button span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .seedream-preview__empty {
   position: relative;
   z-index: 2;
@@ -2254,6 +2274,10 @@ button {
 
   .seedream-console__panel--preview {
     grid-template-rows: auto minmax(280px, 54svh) auto;
+  }
+
+  .seedream-preview__actions .cinematic-button {
+    width: 100%;
   }
 
   .seedream-preview img {
