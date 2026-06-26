@@ -38,19 +38,37 @@ npm run verify
 
 ## 环境变量
 
-复制 `.env.example` 为 `.env.local`，并填入 Supabase 项目信息。
+复制 `.env.example` 为 `.env.local`，并按运行场景填入 Supabase 和火山引擎配置。
 
 ```env
+# true: 无需外部服务即可本地预览；false: 必须填写全部真实配置
+DEMO_MODE=true
+
+# 应用公开地址；生产环境请改成 Vercel 正式域名
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# 浏览器可见的 Supabase 配置
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+
+# 仅服务端使用；不要添加 NEXT_PUBLIC_ 前缀
 SUPABASE_SECRET_KEY=
+
+# 使用 Supabase Connect 提供的 transaction pooler 连接串
 SUPABASE_DB_URL=
+
+# 仅服务端使用
+VOLCENGINE_API_KEY=
+VOLCENGINE_IMAGE_API_URL=https://ark.cn-beijing.volces.com/api/v3/images/generations
+VOLCENGINE_IMAGE_MODEL=doubao-seedream-4-5-251128
 ```
 
 注意：
 
+- `DEMO_MODE=true` 适合本地预览；生产环境接入真实 Supabase 和火山引擎时应设置为 `false`。
+- `NEXT_PUBLIC_APP_URL` 本地使用 `http://localhost:3000`，上线后改成 Vercel 正式域名。
 - `NEXT_PUBLIC_SUPABASE_URL` 和 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` 可以暴露给浏览器。
-- `SUPABASE_SECRET_KEY` 和 `SUPABASE_DB_URL` 只能用于服务端、迁移或管理脚本，不要提交到 GitHub。
+- `SUPABASE_SECRET_KEY`、`SUPABASE_DB_URL` 和 `VOLCENGINE_API_KEY` 只能用于服务端、迁移或管理脚本，不要提交到 GitHub。
 - 当前页面尚未读取 Supabase；这些变量用于后续数据库能力接入和 Vercel 配置准备。
 
 ## 部署
@@ -61,7 +79,7 @@ SUPABASE_DB_URL=
 - Build Command: `npm run build`
 - Framework: Next.js
 
-部署时请在 Vercel Project Settings 中配置 Supabase 环境变量。真实密钥只放在 Vercel 环境变量中，不提交到仓库。
+部署时请在 Vercel Project Settings 中配置 Supabase 和火山引擎环境变量。真实密钥只放在 Vercel 环境变量中，不提交到仓库。
 
 ## 开源协议
 
