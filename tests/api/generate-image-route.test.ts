@@ -76,6 +76,34 @@ describe("/api/generate-image", () => {
     expect(body.imageUrl).toBe("https://example.com/volcengine-generated.png")
   })
 
+  it("removes invisible copy artifacts from VOLCENGINE_API_KEY before sending it", async () => {
+    delete process.env.ARK_API_KEY
+    process.env.VOLCENGINE_API_KEY = "\uFEFFtest-volcengine-key \n"
+    const fetchMock = vi.fn(async () =>
+      Response.json({
+        data: [{ url: "https://example.com/clean-key-generated.png" }],
+      }),
+    )
+    vi.stubGlobal("fetch", fetchMock)
+    const { POST } = await import("@/app/api/generate-image/route")
+
+    const response = await POST(
+      createRequest({
+        subject: "黑色水面上的银白香水瓶广告大片",
+      }),
+    )
+
+    expect(response.status).toBe(200)
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://ark.cn-beijing.volces.com/api/v3/images/generations",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          authorization: "Bearer test-volcengine-key",
+        }),
+      }),
+    )
+  })
+
   it("validates that the subject brief is meaningful", async () => {
     const { POST } = await import("@/app/api/generate-image/route")
 

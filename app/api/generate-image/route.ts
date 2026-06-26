@@ -56,8 +56,14 @@ function normalizeInput(body: unknown): SeedreamInput | { error: string } {
   }
 }
 
+function cleanApiKey(value: string | undefined) {
+  return value?.replace(/\uFEFF/g, "").trim()
+}
+
 export async function POST(request: Request) {
-  const apiKey = process.env.VOLCENGINE_API_KEY ?? process.env.ARK_API_KEY
+  const apiKey =
+    cleanApiKey(process.env.VOLCENGINE_API_KEY) ||
+    cleanApiKey(process.env.ARK_API_KEY)
 
   if (!apiKey) {
     return NextResponse.json(
@@ -95,7 +101,19 @@ export async function POST(request: Request) {
       },
       method: "POST",
     })
-  } catch {
+  } catch (error) {
+    const providerError = error instanceof Error ? error : null
+
+    console.error("seedream_provider_network_error", {
+      cause:
+        providerError && "cause" in providerError
+          ? String(providerError.cause)
+          : undefined,
+      endpoint: SEEDREAM_ENDPOINT,
+      message: providerError?.message,
+      name: providerError?.name,
+    })
+
     return NextResponse.json(
       {
         code: "provider_network_error",
