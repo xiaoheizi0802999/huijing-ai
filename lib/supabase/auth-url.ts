@@ -1,5 +1,6 @@
 export type SupabaseAuthUrlParams = {
   accessToken?: string
+  authError?: string
   refreshToken?: string
   code?: string
   tokenHash?: string
@@ -54,6 +55,36 @@ function readParam(search: URLSearchParams, key: string) {
   return search.get(key) || undefined
 }
 
+async function verifyEmailTokenHash({
+  supabaseClient,
+  tokenHash,
+  type,
+}: {
+  supabaseClient: SupabaseAuthClient
+  tokenHash: string
+  type: "email" | "magiclink"
+}) {
+  const verificationTypes: Array<"email" | "magiclink"> =
+    type === "magiclink" ? ["magiclink", "email"] : ["email", "magiclink"]
+  let lastResult: Awaited<
+    ReturnType<SupabaseAuthClient["auth"]["verifyOtp"]>
+  > | null = null
+
+  for (const verificationType of verificationTypes) {
+    const result = await supabaseClient.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: verificationType,
+    })
+    lastResult = result
+
+    if (result.data.session?.access_token) {
+      return result
+    }
+  }
+
+  return lastResult
+}
+
 export function parseSupabaseAuthUrl(value: string) {
   const trimmedValue = value.trim()
 
@@ -68,9 +99,12 @@ export function parseSupabaseAuthUrl(value: string) {
 
     return {
       accessToken: readParam(hashParams, "access_token"),
+      authError: readParam(url.searchParams, "auth_error"),
       refreshToken: readParam(hashParams, "refresh_token"),
       code: readParam(url.searchParams, "code"),
-      tokenHash: readParam(url.searchParams, "token_hash"),
+      tokenHash:
+        readParam(url.searchParams, "token_hash") ??
+        readParam(url.searchParams, "token"),
       type: type === "magiclink" ? "magiclink" : type === "email" ? "email" : undefined,
     } satisfies SupabaseAuthUrlParams
   } catch {
@@ -86,6 +120,13 @@ export async function completeSupabaseAuthFromUrl(
 
   if (!authParams) {
     return { status: "skipped" }
+  }
+
+  if (authParams.authError) {
+    return {
+      message: authParams.authError,
+      status: "failed",
+    }
   }
 
   if (authParams.accessToken && authParams.refreshToken) {
@@ -109,14 +150,30 @@ export async function completeSupabaseAuthFromUrl(
   }
 
   if (authParams.tokenHash) {
-    const { data, error } = await supabaseClient.auth.verifyOtp({
-      token_hash: authParams.tokenHash,
+    const verificationResult = await verifyEmailTokenHash({
+      supabaseClient,
+      tokenHash: authParams.tokenHash,
       type: authParams.type === "magiclink" ? "magiclink" : "email",
     })
+    const { data, error } = verificationResult ?? {
+      data: {
+        session: null,
+      },
+      error: {
+        message: "auth_confirmation_failed",
+      },
+    }
 
-    return error
-      ? { message: error.message, status: "failed" }
+    return error || !data.session?.access_token
+      ? { message: error?.message ?? "auth_confirmation_failed", status: "failed" }
       : { session: data.session, status: "completed" }
+  }
+
+  if (/\/auth\/v1\/verify/i.test(value)) {
+    return {
+      message: "这是一条 Supabase 默认确认链接，但里面没有可回填的 token_hash。请直接点击邮件按钮，或把邮件模板改为使用 {{ .TokenHash }}。",
+      status: "failed",
+    }
   }
 
   return { status: "skipped" }
@@ -126,10 +183,12 @@ export function removeSupabaseAuthParamsFromUrl(value: string) {
   try {
     const url = new URL(value)
     const authSearchParams = [
+      "auth_error",
       "code",
       "error",
       "error_code",
       "error_description",
+      "token",
       "token_hash",
       "type",
     ]

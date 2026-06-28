@@ -98,4 +98,46 @@ describe("/auth/confirm", () => {
       "http://localhost/generate/history#access_token=access-3&refresh_token=refresh-3",
     )
   })
+
+  it("falls back to email token verification when a magiclink template type fails", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "publishable-key")
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://example.supabase.co")
+    supabaseMock.verifyOtp
+      .mockResolvedValueOnce({
+        data: {
+          session: null,
+        },
+        error: {
+          message: "invalid token type",
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          session: {
+            access_token: "access-4",
+            refresh_token: "refresh-4",
+          },
+        },
+        error: null,
+      })
+    const { GET } = await import("@/app/auth/confirm/route")
+
+    const response = await GET(
+      new Request(
+        "http://localhost/auth/confirm?token_hash=hash-4&type=magiclink&next=/generate",
+      ),
+    )
+
+    expect(supabaseMock.verifyOtp).toHaveBeenNthCalledWith(1, {
+      token_hash: "hash-4",
+      type: "magiclink",
+    })
+    expect(supabaseMock.verifyOtp).toHaveBeenNthCalledWith(2, {
+      token_hash: "hash-4",
+      type: "email",
+    })
+    expect(response.headers.get("location")).toBe(
+      "http://localhost/generate#access_token=access-4&refresh_token=refresh-4",
+    )
+  })
 })
