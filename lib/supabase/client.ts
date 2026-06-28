@@ -1,6 +1,6 @@
 "use client"
 
-import { createBrowserClient } from "@supabase/ssr"
+import { createClient } from "@supabase/supabase-js"
 import { getSupabasePublicConfig } from "@/lib/supabase/config"
 
 export function createSupabaseBrowserClient() {
@@ -10,6 +10,12 @@ export function createSupabaseBrowserClient() {
     return null
   }
 
-  return createBrowserClient(config.url, config.publishableKey)
+  return createClient(config.url, config.publishableKey, {
+    auth: {
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      flowType: "implicit",
+      persistSession: true,
+    },
+  })
 }
-
