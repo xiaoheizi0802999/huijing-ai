@@ -105,7 +105,7 @@ export function UpgradeDialog({ onClose, open }: UpgradeDialogProps) {
       >
         <button
           ref={closeButtonRef}
-          aria-label="关闭升级弹窗"
+          aria-label="关闭说明弹窗"
           className="upgrade-dialog__close"
           onClick={onClose}
           type="button"
@@ -113,11 +113,11 @@ export function UpgradeDialog({ onClose, open }: UpgradeDialogProps) {
           <X aria-hidden="true" size={22} weight="thin" />
         </button>
 
-        <p className="upgrade-dialog__eyebrow">ACCESS PREVIEW</p>
-        <h2 id="upgrade-dialog-title">升级创作权限</h2>
-        <p className="upgrade-dialog__lead">升级功能即将开放</p>
+        <p className="upgrade-dialog__eyebrow">PUBLIC CREATION</p>
+        <h2 id="upgrade-dialog-title">公开创作方式</h2>
+        <p className="upgrade-dialog__lead">打开页面即可开始</p>
         <p id="upgrade-dialog-description">
-          当前版本不接入真实支付或订单系统。这里仅保留未来会员升级入口，用于提示更多创作次数与高级权限即将上线。
+          当前版本不接入支付或订单系统。生成入口直接开放，历史作品保存在当前浏览器中，你可以随时下载或删除。
         </p>
       </div>
     </div>

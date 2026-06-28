@@ -2,46 +2,14 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, expect, it, vi } from "vitest"
 import { GenerationHistoryPage } from "@/components/cinematic/generation-history-page"
 
-const supabaseMock = vi.hoisted(() => ({
-  client: null as unknown,
-}))
+const historyKey = "huijing.seedream.history.v1"
 
-vi.mock("@/lib/supabase/client", () => ({
-  createSupabaseBrowserClient: () => supabaseMock.client,
-}))
-
-function mockSignedInClient() {
-  supabaseMock.client = {
-    auth: {
-      getSession: vi.fn(async () => ({
-        data: {
-          session: {
-            access_token: "token-1",
-            user: {
-              email: "director@example.com",
-              id: "user-1",
-            },
-          },
-        },
-      })),
-      onAuthStateChange: vi.fn(() => ({
-        data: {
-          subscription: {
-            unsubscribe: vi.fn(),
-          },
-        },
-      })),
-      signInWithOtp: vi.fn(),
-    },
-  }
-}
-
-function createCloudHistoryResponse() {
-  return {
-    history: [
+function writeLocalHistory() {
+  window.localStorage.setItem(
+    historyKey,
+    JSON.stringify([
       {
         aspectRatio: "16:9",
-        cloudId: "history-frame-01",
         createdAt: "2026-06-25T09:30:00.000Z",
         id: "history-frame-01",
         imageType: "产品摄影",
@@ -51,8 +19,8 @@ function createCloudHistoryResponse() {
         quality: "4K",
         subject: "黑色水面上的银白香水瓶",
       },
-    ],
-  }
+    ]),
+  )
 }
 
 function mockAnchorDownload() {
@@ -76,19 +44,18 @@ function mockAnchorDownload() {
 
 afterEach(() => {
   cleanup()
-  supabaseMock.client = null
+  window.localStorage.clear()
   vi.restoreAllMocks()
   vi.unstubAllGlobals()
 })
 
-it("downloads the selected cloud history frame", async () => {
-  mockSignedInClient()
-  vi.stubGlobal("fetch", vi.fn(async () => Response.json(createCloudHistoryResponse())))
+it("downloads the selected local history frame", async () => {
+  writeLocalHistory()
   const { anchor, click } = mockAnchorDownload()
 
   render(<GenerationHistoryPage />)
 
-  fireEvent.click(await screen.findByRole("button", { name: "下载图片" }))
+  fireEvent.click(screen.getByRole("button", { name: "下载图片" }))
 
   await waitFor(() => {
     expect(click).toHaveBeenCalledOnce()
@@ -97,31 +64,16 @@ it("downloads the selected cloud history frame", async () => {
   expect(anchor.download).toContain("huijing-ai-")
 })
 
-it("deletes the selected cloud history frame through the API", async () => {
-  mockSignedInClient()
-  const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-    if (String(input).includes("/api/generation-history/history-frame-01")) {
-      return Response.json({ deleted: true })
-    }
-
-    return Response.json(createCloudHistoryResponse())
-  })
+it("deletes the selected local history frame without calling an API", () => {
+  writeLocalHistory()
+  const fetchMock = vi.fn()
   vi.stubGlobal("fetch", fetchMock)
 
   render(<GenerationHistoryPage />)
 
-  fireEvent.click(await screen.findByRole("button", { name: "删除记录" }))
+  fireEvent.click(screen.getByRole("button", { name: "删除记录" }))
 
-  await waitFor(() => {
-    expect(fetchMock).toHaveBeenCalledWith(
-      "/api/generation-history/history-frame-01",
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          authorization: "Bearer token-1",
-        }),
-        method: "DELETE",
-      }),
-    )
-  })
+  expect(fetchMock).not.toHaveBeenCalled()
+  expect(window.localStorage.getItem(historyKey)).toBe("[]")
   expect(screen.getByText("暂无生成记录")).toBeInTheDocument()
 })

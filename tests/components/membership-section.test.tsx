@@ -7,7 +7,7 @@ afterEach(() => {
   document.body.style.overflow = ""
 })
 
-it("renders the membership credit benefits in the membership anchor section", () => {
+it("renders public creation benefits in the membership anchor section", () => {
   const { container } = render(<MembershipSection />)
   const section = container.querySelector("#membership")
 
@@ -17,28 +17,26 @@ it("renders the membership credit benefits in the membership anchor section", ()
   expect(
     screen.getByRole("heading", { name: /创作无界，\s*灵感不设限/ }),
   ).toBeInTheDocument()
-  expect(screen.getByText("新用户每日赠送 5 个积分")).toBeInTheDocument()
-  expect(screen.getByText("每生成 1 张图片消耗 1 个积分")).toBeInTheDocument()
-  expect(
-    screen.getByText("积分不足时可升级解锁更多创作次数"),
-  ).toBeInTheDocument()
+  expect(screen.getByText("打开工作台即可生成")).toBeInTheDocument()
+  expect(screen.getByText("作品自动保存在本地历史")).toBeInTheDocument()
+  expect(screen.getByText("下载与删除都由你掌控")).toBeInTheDocument()
 })
 
-it("opens and dismisses the upgrade placeholder dialog accessibly", () => {
+it("opens and dismisses the creation details dialog accessibly", () => {
   document.body.style.overflow = "clip"
 
   const { container } = render(<MembershipSection />)
-  const upgradeButton = screen.getByRole("button", { name: "升级创作权限" })
+  const upgradeButton = screen.getByRole("button", { name: "查看创作方式" })
 
   fireEvent.click(upgradeButton)
 
-  const dialog = screen.getByRole("dialog", { name: "升级创作权限" })
-  const closeButton = screen.getByRole("button", { name: "关闭升级弹窗" })
+  const dialog = screen.getByRole("dialog", { name: "公开创作方式" })
+  const closeButton = screen.getByRole("button", { name: "关闭说明弹窗" })
 
   expect(dialog).toHaveAttribute("aria-modal", "true")
-  expect(screen.getByText("升级功能即将开放")).toBeInTheDocument()
+  expect(screen.getByText("打开页面即可开始")).toBeInTheDocument()
   expect(
-    screen.getByText(/当前版本不接入真实支付或订单系统/),
+    screen.getByText(/当前版本不接入支付或订单系统/),
   ).toBeInTheDocument()
   expect(closeButton).toHaveFocus()
   expect(document.body.style.overflow).toBe("hidden")
@@ -53,21 +51,21 @@ it("opens and dismisses the upgrade placeholder dialog accessibly", () => {
 
   fireEvent.click(dialog)
 
-  expect(screen.getByRole("dialog", { name: "升级创作权限" })).toBeInTheDocument()
+  expect(screen.getByRole("dialog", { name: "公开创作方式" })).toBeInTheDocument()
 
   fireEvent.keyDown(document, { key: "Escape" })
 
   expect(
-    screen.queryByRole("dialog", { name: "升级创作权限" }),
+    screen.queryByRole("dialog", { name: "公开创作方式" }),
   ).not.toBeInTheDocument()
   expect(document.body.style.overflow).toBe("clip")
   expect(upgradeButton).toHaveFocus()
 
   fireEvent.click(upgradeButton)
-  fireEvent.click(screen.getByRole("button", { name: "关闭升级弹窗" }))
+  fireEvent.click(screen.getByRole("button", { name: "关闭说明弹窗" }))
 
   expect(
-    screen.queryByRole("dialog", { name: "升级创作权限" }),
+    screen.queryByRole("dialog", { name: "公开创作方式" }),
   ).not.toBeInTheDocument()
   expect(document.body.style.overflow).toBe("clip")
   expect(upgradeButton).toHaveFocus()
@@ -83,7 +81,7 @@ it("opens and dismisses the upgrade placeholder dialog accessibly", () => {
   fireEvent.click(backdrop)
 
   expect(
-    screen.queryByRole("dialog", { name: "升级创作权限" }),
+    screen.queryByRole("dialog", { name: "公开创作方式" }),
   ).not.toBeInTheDocument()
   expect(document.body.style.overflow).toBe("clip")
   expect(upgradeButton).toHaveFocus()

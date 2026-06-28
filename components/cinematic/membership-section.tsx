@@ -1,6 +1,6 @@
 "use client"
 
-import { Gift, LockKey, Stack } from "@phosphor-icons/react"
+import { DownloadSimple, ImageSquare, Stack } from "@phosphor-icons/react"
 import Image from "next/image"
 import { useEffect, useRef, useState, type MouseEvent } from "react"
 import { cinematicAssets } from "@/lib/landing-content"
@@ -10,19 +10,19 @@ import { UpgradeDialog } from "./upgrade-dialog"
 
 const membershipBenefits = [
   {
-    description: "每天登录即可领取，持续激发新的视觉灵感。",
-    Icon: Gift,
-    title: "新用户每日赠送 5 个积分",
+    description: "进入生图页就能提交创意简述，生成过程保持直接轻量。",
+    Icon: ImageSquare,
+    title: "打开工作台即可生成",
   },
   {
-    description: "透明简单的创作机制，让注意力回到作品本身。",
+    description: "生成成功后记录会留在当前浏览器，方便回看提示词与参数。",
     Icon: Stack,
-    title: "每生成 1 张图片消耗 1 个积分",
+    title: "作品自动保存在本地历史",
   },
   {
-    description: "升级入口已保留，当前版本不接入真实支付。",
-    Icon: LockKey,
-    title: "积分不足时可升级解锁更多创作次数",
+    description: "成片可以直接下载，历史记录也可以随时从本地删除。",
+    Icon: DownloadSimple,
+    title: "下载与删除都由你掌控",
   },
 ] as const
 
@@ -85,20 +85,20 @@ export function MembershipSection() {
       <div className="membership-content">
         <Reveal className="membership-access" delay={100}>
           <p className="membership-access__eyebrow">
-            DAILY CREDITS / FUTURE ACCESS
+            PUBLIC STUDIO / LOCAL ARCHIVE
           </p>
           <p>
-            把积分机制处理成安静的幕后秩序：清晰、克制、可预期，让每一次生成都像进入一间私密放映室。
+            创作流程保持直接、轻量、可预期：打开工作台，写下想法，生成作品，再把结果留在当前浏览器里。
           </p>
           <CinematicButton
             onClick={openUpgradeDialog}
             variant="outline"
           >
-            升级创作权限
+            查看创作方式
           </CinematicButton>
         </Reveal>
 
-        <div aria-label="积分与会员权益" className="membership-benefits">
+        <div aria-label="公开创作能力" className="membership-benefits">
           {membershipBenefits.map((benefit, index) => {
             const Icon = benefit.Icon
 

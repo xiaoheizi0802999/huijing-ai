@@ -91,7 +91,6 @@ it("renders the Seedream generation studio route without changing the homepage",
       name: "像导演一样调度",
     }),
   ).toBeInTheDocument()
-  expect(screen.getByText("登录后才可以使用生图与云端历史。")).toBeInTheDocument()
-  expect(screen.queryByLabelText("主体描述")).not.toBeInTheDocument()
+  expect(screen.getByLabelText("主体描述")).toBeInTheDocument()
   expect(screen.getByRole("link", { name: "返回首页" })).toHaveAttribute("href", "/")
 })
