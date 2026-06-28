@@ -77,6 +77,7 @@ it("renders a signed-in Seedream creation studio that visually belongs to the ci
   expect(await screen.findByLabelText("主体描述")).toBeInTheDocument()
   expect(screen.getByLabelText("图片类型")).toBeInTheDocument()
   expect(screen.getByLabelText("风格气质")).toBeInTheDocument()
+  expect(screen.getByLabelText("色彩与光线")).toBeInTheDocument()
   expect(screen.getByLabelText("画幅")).toBeInTheDocument()
   expect(screen.getByLabelText("清晰度")).toBeInTheDocument()
   expect(screen.getByRole("button", { name: "生成图片" })).toBeInTheDocument()
@@ -95,6 +96,9 @@ it("submits the creative brief and renders the generated image", async () => {
   fireEvent.change(await screen.findByLabelText("主体描述"), {
     target: { value: "一位站在雨夜高楼边缘的未来城市导演" },
   })
+  fireEvent.change(screen.getByLabelText("色彩与光线"), {
+    target: { value: "暖金胶片" },
+  })
   fireEvent.click(screen.getByRole("button", { name: "生成图片" }))
 
   await waitFor(() => {
@@ -106,6 +110,7 @@ it("submits the creative brief and renders the generated image", async () => {
   expect(fetchMock).toHaveBeenCalledWith(
     "/api/generate-image",
     expect.objectContaining({
+      body: expect.stringContaining('"colorPalette":"暖金胶片"'),
       method: "POST",
     }),
   )

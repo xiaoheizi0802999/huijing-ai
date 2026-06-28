@@ -2,11 +2,14 @@ import { NextResponse } from "next/server"
 import {
   SEEDREAM_ENDPOINT,
   SEEDREAM_MODEL,
+  defaultSeedreamColorPalette,
   type SeedreamAspectRatio,
+  type SeedreamColorPalette,
   type SeedreamInput,
   type SeedreamQuality,
   buildSeedreamPayload,
   extractSeedreamImage,
+  seedreamColorPalettes,
 } from "@/lib/seedream"
 import {
   authenticateSupabaseRequest,
@@ -18,6 +21,7 @@ import {
 
 const defaultInput: Omit<SeedreamInput, "subject"> = {
   aspectRatio: "16:9",
+  colorPalette: defaultSeedreamColorPalette,
   imageType: "电影海报",
   mood: "黑色电影",
   quality: "2K",
@@ -31,6 +35,10 @@ function isQuality(value: unknown): value is SeedreamQuality {
   return value === "2K" || value === "4K"
 }
 
+function isColorPalette(value: unknown): value is SeedreamColorPalette {
+  return seedreamColorPalettes.includes(value as SeedreamColorPalette)
+}
+
 function normalizeInput(body: unknown): SeedreamInput | { error: string } {
   if (!body || typeof body !== "object") {
     return { error: "请先填写主体描述，再生成画面。" }
@@ -38,6 +46,7 @@ function normalizeInput(body: unknown): SeedreamInput | { error: string } {
 
   const record = body as Record<string, unknown>
   const aspectRatio = record.aspectRatio
+  const colorPalette = record.colorPalette
   const quality = record.quality
   const subject =
     typeof record.subject === "string" ? record.subject.trim() : ""
@@ -50,6 +59,9 @@ function normalizeInput(body: unknown): SeedreamInput | { error: string } {
     aspectRatio: isAspectRatio(aspectRatio)
       ? aspectRatio
       : defaultInput.aspectRatio,
+    colorPalette: isColorPalette(colorPalette)
+      ? colorPalette
+      : defaultInput.colorPalette,
     imageType:
       typeof record.imageType === "string" && record.imageType.trim()
         ? record.imageType.trim()

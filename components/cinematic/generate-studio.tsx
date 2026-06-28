@@ -11,6 +11,11 @@ import { type FormEvent, useEffect, useMemo, useState } from "react"
 import { CinematicButton } from "@/components/cinematic/cinematic-button"
 import { downloadImage } from "@/lib/image-download"
 import {
+  defaultSeedreamColorPalette,
+  type SeedreamColorPalette,
+  seedreamColorPalettes,
+} from "@/lib/seedream"
+import {
   formatSupabaseAuthError,
   isSupabaseEmailRateLimit,
 } from "@/lib/supabase/auth-errors"
@@ -22,6 +27,10 @@ const moods = ["黑色电影", "奢侈品牌广告片", "艺术杂志封面", "�
 const aspectRatios = ["16:9", "1:1", "9:16", "4:3", "3:4"]
 const qualities = ["2K", "4K"]
 const emailLinkCooldownSeconds = 60
+
+function isSeedreamColorPalette(value: string): value is SeedreamColorPalette {
+  return seedreamColorPalettes.includes(value as SeedreamColorPalette)
+}
 
 type GenerateState = "idle" | "loading" | "success" | "error"
 
@@ -73,6 +82,7 @@ export function GenerateStudio() {
   const [subject, setSubject] = useState("一位站在雨夜高楼边缘的未来城市导演")
   const [imageType, setImageType] = useState(imageTypes[0])
   const [mood, setMood] = useState(moods[0])
+  const [colorPalette, setColorPalette] = useState(defaultSeedreamColorPalette)
   const [aspectRatio, setAspectRatio] = useState(aspectRatios[0])
   const [quality, setQuality] = useState(qualities[0])
   const [accountState, setAccountState] = useState<AccountState>("checking")
@@ -106,10 +116,10 @@ export function GenerateStudio() {
     () =>
       [
         subject,
-        `${imageType} / ${mood} / ${aspectRatio} / ${quality}`,
-        "Cinematic realism, premium editorial composition, silver-white highlights, controlled negative space.",
+        `${imageType} / ${mood} / ${colorPalette} / ${aspectRatio} / ${quality}`,
+        "Cinematic realism, premium editorial composition, strong contrast, refined color discipline, controlled negative space.",
       ].join("\n"),
-    [aspectRatio, imageType, mood, quality, subject],
+    [aspectRatio, colorPalette, imageType, mood, quality, subject],
   )
 
   async function readSessionResponse(response: Response) {
@@ -439,6 +449,7 @@ export function GenerateStudio() {
       const response = await fetch("/api/generate-image", {
         body: JSON.stringify({
           aspectRatio,
+          colorPalette,
           imageType,
           mood,
           quality,
@@ -679,6 +690,24 @@ export function GenerateStudio() {
             >
               {moods.map((currentMood) => (
                 <option key={currentMood}>{currentMood}</option>
+              ))}
+            </select>
+          </label>
+
+          <label className="seedream-field">
+            <span>色彩与光线</span>
+            <select
+              aria-label="色彩与光线"
+              value={colorPalette}
+              onChange={(event) => {
+                const nextPalette = event.target.value
+                if (isSeedreamColorPalette(nextPalette)) {
+                  setColorPalette(nextPalette)
+                }
+              }}
+            >
+              {seedreamColorPalettes.map((currentPalette) => (
+                <option key={currentPalette}>{currentPalette}</option>
               ))}
             </select>
           </label>

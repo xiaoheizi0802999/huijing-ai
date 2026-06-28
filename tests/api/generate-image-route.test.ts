@@ -199,6 +199,7 @@ describe("/api/generate-image", () => {
     const response = await POST(
       createRequest({
         aspectRatio: "16:9",
+        colorPalette: "深红剧场",
         imageType: "电影海报",
         mood: "黑色电影",
         quality: "2K",
@@ -226,6 +227,7 @@ describe("/api/generate-image", () => {
     expect(requestInit).toBeDefined()
     expect(JSON.parse(requestInit?.body as string)).toMatchObject({
       model: "doubao-seedream-4-5-251128",
+      prompt: expect.stringContaining("deep crimson"),
       response_format: "url",
       size: "2K",
       watermark: false,

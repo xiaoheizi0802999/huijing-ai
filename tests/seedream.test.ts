@@ -16,17 +16,23 @@ describe("Seedream request helpers", () => {
   })
 
   it("turns a simple creative brief into cinematic visual language", () => {
-    const prompt = buildSeedreamPrompt({
+    const input = {
       aspectRatio: "16:9",
+      colorPalette: "暖金胶片",
       imageType: "电影海报",
       mood: "黑色电影",
       quality: "2K",
       subject: "一位站在雨夜高楼边缘的未来城市导演",
+    } as const
+    const prompt = buildSeedreamPrompt({
+      ...input,
     })
 
     expect(prompt).toContain("一位站在雨夜高楼边缘的未来城市导演")
     expect(prompt).toContain("电影海报")
     expect(prompt).toContain("黑色电影")
+    expect(prompt).toContain("暖金胶片")
+    expect(prompt).toContain("warm amber")
     expect(prompt).toContain("cinematic")
     expect(prompt).toContain("premium editorial composition")
     expect(prompt).toContain("no cheap gradients")
