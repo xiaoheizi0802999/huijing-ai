@@ -20,7 +20,11 @@ import {
   isSupabaseEmailRateLimit,
 } from "@/lib/supabase/auth-errors"
 import { getSupabaseEmailRedirectTo } from "@/lib/supabase/auth-redirect"
-import { parseSupabaseAuthUrl } from "@/lib/supabase/auth-url"
+import {
+  completeSupabaseAuthFromUrl,
+  parseSupabaseAuthUrl,
+  removeSupabaseAuthParamsFromUrl,
+} from "@/lib/supabase/auth-url"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 
 const imageTypes = ["电影海报", "人像大片", "产品摄影", "建筑场景", "概念艺术"]
@@ -207,16 +211,54 @@ export function GenerateStudio() {
     }
 
     let mounted = true
+    const authClient = supabaseClient
 
-    supabaseClient.auth.getSession().then(({ data }) => {
+    async function initializeSession() {
+      if (!mounted) {
+        return
+      }
+
+      const authCompletionResult = await completeSupabaseAuthFromUrl(
+        authClient,
+        window.location.href,
+      )
+
+      if (!mounted) {
+        return
+      }
+
+      if (authCompletionResult.status === "completed") {
+        window.history.replaceState(
+          null,
+          document.title,
+          removeSupabaseAuthParamsFromUrl(window.location.href),
+        )
+        setAuthMessage("登录成功，正在同步创作权限。")
+        await refreshAccount(authCompletionResult.session as SupabaseSession)
+        return
+      }
+
+      if (authCompletionResult.status === "failed") {
+        window.history.replaceState(
+          null,
+          document.title,
+          removeSupabaseAuthParamsFromUrl(window.location.href),
+        )
+        setAuthMessage(authCompletionResult.message)
+      }
+
+      const { data } = await authClient.auth.getSession()
+
       if (!mounted) {
         return
       }
 
       void refreshAccount(data.session as SupabaseSession)
-    })
+    }
 
-    const { data } = supabaseClient.auth.onAuthStateChange(
+    void initializeSession()
+
+    const { data } = authClient.auth.onAuthStateChange(
       (_event, nextSession) => {
         if (!mounted) {
           return
@@ -280,7 +322,7 @@ export function GenerateStudio() {
       setAuthMessage(
         signInError
           ? `登录链接发送失败：${formatSupabaseAuthError(signInError.message)}`
-          : "登录链接已发送，请查看邮箱。",
+          : "登录链接已发送，请直接点击邮箱里的链接完成登录。默认邮件不会单独发送验证码。",
       )
     } catch (caughtError) {
       const errorMessage = readAuthErrorMessage(caughtError)
@@ -307,12 +349,12 @@ export function GenerateStudio() {
     const token = loginCode.replace(/\s+/g, "")
 
     if (!email.includes("@")) {
-      setAuthMessage("请先填写接收验证码的邮箱。")
+      setAuthMessage("请先填写接收验证码或登录链接的邮箱。")
       return
     }
 
     if (token.length < 4) {
-      setAuthMessage("请填写邮件中的验证码。")
+      setAuthMessage("当前默认邮件是登录链接；只有自定义邮件模板加入验证码后，才需要填写这里。")
       return
     }
 
@@ -556,7 +598,7 @@ export function GenerateStudio() {
 
             <div className="seedream-account__login seedream-account__login--secondary">
               <label>
-                <span>邮箱验证码</span>
+                <span>邮箱验证码（可选）</span>
                 <input
                   aria-label="邮箱验证码"
                   inputMode="numeric"
@@ -590,7 +632,7 @@ export function GenerateStudio() {
             </div>
 
             <span className="seedream-account__hint">
-              如果链接在邮件预览页打开，请复制完整链接粘贴到这里，原页面会接住登录态。
+              邮箱默认发送登录链接，不会额外发送验证码。若链接在邮件预览页打开失败，请复制完整链接粘贴到这里。
             </span>
           </div>
         ) : (

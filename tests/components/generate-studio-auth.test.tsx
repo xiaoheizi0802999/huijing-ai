@@ -242,6 +242,72 @@ it("restores a session from a pasted magic link in the original browser", async 
   expect(await screen.findByText("剩余 5 积分")).toBeInTheDocument()
 })
 
+it("automatically restores a session when an email login link opens the generate page", async () => {
+  window.history.pushState(
+    {},
+    "",
+    "/generate#access_token=token-from-email&refresh_token=refresh-from-email",
+  )
+  const setSession = vi.fn(async () => ({
+    data: {
+      session: {
+        access_token: "token-from-email",
+        user: {
+          email: "director@example.com",
+          id: "user-1",
+        },
+      },
+    },
+    error: null,
+  }))
+  const supabaseClient = {
+    auth: {
+      getSession: vi.fn(async () => ({
+        data: {
+          session: null,
+        },
+      })),
+      onAuthStateChange: vi.fn(() => ({
+        data: {
+          subscription: {
+            unsubscribe: vi.fn(),
+          },
+        },
+      })),
+      exchangeCodeForSession: vi.fn(),
+      setSession,
+      signInWithOtp: vi.fn(),
+      signOut: vi.fn(),
+      verifyOtp: vi.fn(),
+    },
+  }
+  supabaseMock.client = supabaseClient
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () =>
+      Response.json({
+        credits: 5,
+        granted: 0,
+        user: {
+          email: "director@example.com",
+          id: "user-1",
+        },
+      }),
+    ),
+  )
+
+  render(<GenerateStudio />)
+
+  await waitFor(() => {
+    expect(setSession).toHaveBeenCalledWith({
+      access_token: "token-from-email",
+      refresh_token: "refresh-from-email",
+    })
+  })
+  expect(await screen.findByText("director@example.com")).toBeInTheDocument()
+  expect(window.location.hash).toBe("")
+})
+
 it("shows immediate feedback while sending a login link", async () => {
   const signInWithOtp = vi.fn(() => new Promise(() => {}))
   const supabaseClient = {
@@ -400,5 +466,9 @@ it("renders a cinematic email login panel for guests", async () => {
       },
     })
   })
-  expect(screen.getByText("登录链接已发送，请查看邮箱。")).toBeInTheDocument()
+  expect(
+    screen.getByText(
+      "登录链接已发送，请直接点击邮箱里的链接完成登录。默认邮件不会单独发送验证码。",
+    ),
+  ).toBeInTheDocument()
 })

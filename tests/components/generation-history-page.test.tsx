@@ -144,6 +144,72 @@ it("verifies an email code before loading cloud history", async () => {
   })
 })
 
+it("automatically restores a session when an email login link opens the history page", async () => {
+  window.history.pushState(
+    {},
+    "",
+    "/generate/history#access_token=history-token&refresh_token=history-refresh",
+  )
+  const setSession = vi.fn(async () => ({
+    data: {
+      session: {
+        access_token: "history-token",
+        user: {
+          email: "director@example.com",
+          id: "user-1",
+        },
+      },
+    },
+    error: null,
+  }))
+  supabaseMock.client = {
+    auth: {
+      getSession: vi.fn(async () => ({
+        data: {
+          session: null,
+        },
+      })),
+      onAuthStateChange: vi.fn(() => ({
+        data: {
+          subscription: {
+            unsubscribe: vi.fn(),
+          },
+        },
+      })),
+      exchangeCodeForSession: vi.fn(),
+      setSession,
+      signInWithOtp: vi.fn(),
+      verifyOtp: vi.fn(),
+    },
+  }
+  const fetchMock = vi.fn(async () =>
+    Response.json({
+      history: [],
+    }),
+  )
+  vi.stubGlobal("fetch", fetchMock)
+
+  render(<GenerationHistoryPage />)
+
+  await waitFor(() => {
+    expect(setSession).toHaveBeenCalledWith({
+      access_token: "history-token",
+      refresh_token: "history-refresh",
+    })
+  })
+  await waitFor(() => {
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/generation-history",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          authorization: "Bearer history-token",
+        }),
+      }),
+    )
+  })
+  expect(window.location.hash).toBe("")
+})
+
 it("shows immediate feedback while sending a history login link", async () => {
   const signInWithOtp = vi.fn(() => new Promise(() => {}))
   supabaseMock.client = {
