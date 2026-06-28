@@ -101,6 +101,72 @@ export function HeroSection() {
     }
   }, [])
 
+  useEffect(() => {
+    const section = sectionRef.current
+    const screen = screenRef.current
+
+    if (!section || !screen || prefersReducedMotion()) {
+      return
+    }
+
+    const sectionElement = section
+    const screenElement = screen
+    let animationFrame: number | null = null
+    let pointerX = 0.5
+    let pointerY = 0.5
+
+    function updatePointerDepth() {
+      animationFrame = null
+      const tiltY = (pointerX - 0.5) * 5.2
+      const tiltX = (0.5 - pointerY) * 3.4
+      const lightX = 48 + (pointerX - 0.5) * 18
+      const lightY = 18 + (pointerY - 0.5) * 10
+
+      screenElement.style.setProperty("--hero-tilt-x", `${tiltX.toFixed(2)}deg`)
+      screenElement.style.setProperty("--hero-tilt-y", `${tiltY.toFixed(2)}deg`)
+      sectionElement.style.setProperty("--hero-light-x", `${lightX.toFixed(2)}%`)
+      sectionElement.style.setProperty("--hero-light-y", `${lightY.toFixed(2)}%`)
+    }
+
+    function handlePointerMove(event: PointerEvent) {
+      const rect = sectionElement.getBoundingClientRect()
+
+      pointerX = (event.clientX - rect.left) / Math.max(rect.width, 1)
+      pointerY = (event.clientY - rect.top) / Math.max(rect.height, 1)
+
+      if (animationFrame !== null) {
+        return
+      }
+
+      animationFrame = window.requestAnimationFrame(updatePointerDepth)
+    }
+
+    function handlePointerLeave() {
+      pointerX = 0.5
+      pointerY = 0.5
+
+      if (animationFrame !== null) {
+        return
+      }
+
+      animationFrame = window.requestAnimationFrame(updatePointerDepth)
+    }
+
+    sectionElement.addEventListener("pointermove", handlePointerMove, {
+      passive: true,
+    })
+    sectionElement.addEventListener("pointerleave", handlePointerLeave)
+
+    return () => {
+      if (animationFrame !== null) {
+        window.cancelAnimationFrame(animationFrame)
+      }
+
+      sectionElement.removeEventListener("pointermove", handlePointerMove)
+      sectionElement.removeEventListener("pointerleave", handlePointerLeave)
+    }
+  }, [])
+
   return (
     <section
       ref={sectionRef}
@@ -108,6 +174,10 @@ export function HeroSection() {
       className="hero-section"
       id="hero-section"
     >
+      <div aria-hidden="true" className="hero-atmosphere" />
+      <div aria-hidden="true" className="hero-rail">
+        <span />
+      </div>
       <div ref={screenRef} className="hero-screen">
         <Image
           alt={heroAsset.alt}
@@ -144,7 +214,16 @@ export function HeroSection() {
             查看示例
           </CinematicButton>
         </Reveal>
+        <Reveal delay={430}>
+          <div className="hero-meta" aria-label="电影参数">
+            <span>●</span>
+            <span>4K</span>
+            <span>24FPS</span>
+            <span>CINEMATIC</span>
+          </div>
+        </Reveal>
       </div>
+      <div aria-hidden="true" className="hero-floor-reflection" />
     </section>
   )
 }

@@ -1,15 +1,19 @@
 import { CapabilitiesSection } from "@/components/cinematic/capabilities-section"
+import { CinematicExperience } from "@/components/cinematic/cinematic-experience"
 import { CinematicHeader } from "@/components/cinematic/cinematic-header"
 import { FilmGrain } from "@/components/cinematic/film-grain"
 import { FinalCtaSection } from "@/components/cinematic/final-cta-section"
 import { GallerySection } from "@/components/cinematic/gallery-section"
 import { HeroSection } from "@/components/cinematic/hero-section"
+import { IntroSequence } from "@/components/cinematic/intro-sequence"
 import { MembershipSection } from "@/components/cinematic/membership-section"
 import { ProcessSection } from "@/components/cinematic/process-section"
 
 export default function Home() {
   return (
     <div className="cinematic-page">
+      <IntroSequence />
+      <CinematicExperience />
       <CinematicHeader />
       <FilmGrain />
       <main>

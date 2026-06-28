@@ -1,14 +1,14 @@
 "use client"
 
-import { List, X } from "@phosphor-icons/react"
+import { List, UserCircle, X } from "@phosphor-icons/react"
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 
 const links = [
+  { href: "/generate", label: "创作" },
   { href: "#gallery", label: "作品" },
-  { href: "#process", label: "创作流程" },
-  { href: "#membership", label: "积分与会员" },
-  { href: "/generate/history", label: "历史影像" },
+  { href: "#membership", label: "定价" },
+  { href: "#final-cta-section", label: "帮助" },
 ]
 
 const focusableSelector = [
@@ -135,7 +135,15 @@ export function CinematicHeader() {
             className="cinematic-header__cta"
             href="/generate"
           >
-            登录 / 进入创作
+            开始创作
+          </Link>
+
+          <Link
+            aria-label="用户中心"
+            className="cinematic-header__user"
+            href="/generate/history"
+          >
+            <UserCircle aria-hidden="true" size={22} weight="thin" />
           </Link>
         </div>
 
@@ -201,7 +209,17 @@ export function CinematicHeader() {
               href="/generate"
               onClick={closeMenu}
             >
-              登录 / 进入创作
+              开始创作
+            </Link>
+
+            <Link
+              aria-label="用户中心"
+              className="cinematic-header__mobile-user"
+              href="/generate/history"
+              onClick={closeMenu}
+            >
+              用户中心
+              <UserCircle aria-hidden="true" size={26} weight="thin" />
             </Link>
           </nav>
         </div>

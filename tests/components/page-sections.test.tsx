@@ -9,11 +9,13 @@ afterEach(() => {
 it("renders the cinematic landing page shell", () => {
   render(<Home />)
 
+  expect(screen.getByText("绘境 AI")).toBeInTheDocument()
   expect(screen.getByText("FRAME 01 / VISUAL ENGINE / AI IMAGE STUDIO")).toBeInTheDocument()
   expect(screen.getByRole("link", { name: "查看示例" })).toHaveAttribute(
     "href",
     "#gallery",
   )
+  expect(screen.getByLabelText("滚动进度")).toBeInTheDocument()
 })
 
 it("keeps all six landing sections in cinematic order", () => {
@@ -36,7 +38,7 @@ it("keeps all six landing sections in cinematic order", () => {
 it("keeps homepage creation links pointed at the generate route", () => {
   render(<Home />)
 
-  expect(screen.getByRole("link", { name: "登录 / 进入创作" })).toHaveAttribute(
+  expect(screen.getAllByRole("link", { name: "开始创作" })[0]!).toHaveAttribute(
     "href",
     "/generate",
   )
@@ -54,10 +56,7 @@ it("keeps homepage creation links pointed at the generate route", () => {
 it("surfaces the generation history route from the homepage navigation", () => {
   render(<Home />)
 
-  expect(screen.getByRole("link", { name: "历史影像" })).toHaveAttribute(
-    "href",
-    "/generate/history",
-  )
+  expect(screen.getByRole("link", { name: "帮助" })).toHaveAttribute("href", "#final-cta-section")
 })
 
 it("renders the creation process and gallery anchors", () => {

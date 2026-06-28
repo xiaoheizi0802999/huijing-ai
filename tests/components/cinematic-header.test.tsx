@@ -31,25 +31,26 @@ it("renders the brand, desktop navigation, and creation call to action", () => {
   expect(
     screen.getByRole("link", { name: "绘境 AI 首页" }),
   ).toHaveAttribute("href", "/")
-  expect(screen.getByRole("link", { name: "作品" })).toHaveAttribute(
+  expect(screen.getByRole("link", { name: "创作" })).toHaveAttribute(
     "href",
-    "#gallery",
+    "/generate",
   )
-  expect(screen.getByRole("link", { name: "创作流程" })).toHaveAttribute(
-    "href",
-    "#process",
-  )
-  expect(screen.getByRole("link", { name: "积分与会员" })).toHaveAttribute(
+  expect(screen.getByRole("link", { name: "作品" })).toHaveAttribute("href", "#gallery")
+  expect(screen.getByRole("link", { name: "定价" })).toHaveAttribute(
     "href",
     "#membership",
   )
-  expect(screen.getByRole("link", { name: "历史影像" })).toHaveAttribute(
+  expect(screen.getByRole("link", { name: "帮助" })).toHaveAttribute(
     "href",
-    "/generate/history",
+    "#final-cta-section",
   )
-  expect(screen.getByRole("link", { name: "登录 / 进入创作" })).toHaveAttribute(
+  expect(screen.getByRole("link", { name: "开始创作" })).toHaveAttribute(
     "href",
     "/generate",
+  )
+  expect(screen.getByRole("link", { name: "用户中心" })).toHaveAttribute(
+    "href",
+    "/generate/history",
   )
 })
 
@@ -82,8 +83,8 @@ it("traps keyboard focus inside the open mobile menu", () => {
   const lastFocusableItem = focusableLinks[focusableLinks.length - 1]
 
   expect(closeButton).toHaveFocus()
-  expect(lastFocusableItem).toHaveAttribute("href", "/generate")
-  expect(lastFocusableItem).toHaveTextContent("登录 / 进入创作")
+  expect(lastFocusableItem).toHaveAttribute("href", "/generate/history")
+  expect(lastFocusableItem).toHaveTextContent("用户中心")
 
   fireEvent.keyDown(closeButton, { key: "Tab", shiftKey: true })
 
@@ -124,11 +125,12 @@ it("closes the mobile menu and restores body overflow after link navigation", ()
 
   expect(mobileHrefs).toEqual([
     "/",
-    "#gallery",
-    "#process",
-    "#membership",
-    "/generate/history",
     "/generate",
+    "#gallery",
+    "#membership",
+    "#final-cta-section",
+    "/generate",
+    "/generate/history",
   ])
 
   fireEvent.click(within(dialog).getByRole("link", { name: "作品" }))

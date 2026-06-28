@@ -8,6 +8,9 @@ const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8").replace
 )
 
 it("keeps the landing page rhythm compact enough to match the P1 poster reference", () => {
+  expect(css).toContain(".intro-sequence")
+  expect(css).toContain(".cinematic-scroll-progress")
+  expect(css).toContain(".cinematic-cursor-glow")
   expect(css).toContain("--poster-section-y: clamp(72px, 9vh, 108px);")
   expect(css).toContain("--poster-section-y-tight: clamp(58px, 7vh, 88px);")
   expect(css).toContain("--poster-rule-inset: clamp(48px, 7vh, 76px);")
