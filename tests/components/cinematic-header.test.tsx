@@ -47,7 +47,7 @@ it("renders the brand, desktop navigation, and creation call to action", () => {
     "href",
     "/generate/history",
   )
-  expect(screen.getByRole("link", { name: "开始创作" })).toHaveAttribute(
+  expect(screen.getByRole("link", { name: "登录 / 进入创作" })).toHaveAttribute(
     "href",
     "/generate",
   )
@@ -83,6 +83,7 @@ it("traps keyboard focus inside the open mobile menu", () => {
 
   expect(closeButton).toHaveFocus()
   expect(lastFocusableItem).toHaveAttribute("href", "/generate")
+  expect(lastFocusableItem).toHaveTextContent("登录 / 进入创作")
 
   fireEvent.keyDown(closeButton, { key: "Tab", shiftKey: true })
 

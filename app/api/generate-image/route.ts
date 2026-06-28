@@ -8,6 +8,13 @@ import {
   buildSeedreamPayload,
   extractSeedreamImage,
 } from "@/lib/seedream"
+import {
+  authenticateSupabaseRequest,
+  completeCloudGeneration,
+  refundGenerationCredit,
+  reserveGenerationCredit,
+  type SupabaseServiceClient,
+} from "@/lib/supabase/server"
 
 const defaultInput: Omit<SeedreamInput, "subject"> = {
   aspectRatio: "16:9",
@@ -60,7 +67,65 @@ function cleanApiKey(value: string | undefined) {
   return value?.replace(/\uFEFF/g, "").trim()
 }
 
+type ReservedGenerationContext = {
+  client: SupabaseServiceClient
+  credits: number
+  requestId: string
+  userId: string
+}
+
+async function refundReservedGeneration(
+  context: ReservedGenerationContext | null,
+  errorCode: string,
+) {
+  if (!context) {
+    return
+  }
+
+  try {
+    await refundGenerationCredit({
+      client: context.client,
+      errorCode,
+      requestId: context.requestId,
+      userId: context.userId,
+    })
+  } catch (error) {
+    console.error("seedream_credit_refund_error", {
+      message: error instanceof Error ? error.message : "Unknown refund error",
+      requestId: context.requestId,
+    })
+  }
+}
+
 export async function POST(request: Request) {
+  const auth = await authenticateSupabaseRequest(request)
+
+  if ("error" in auth) {
+    return NextResponse.json(
+      {
+        code: auth.error.code,
+        message:
+          auth.error.code === "missing_auth_token"
+            ? "请先登录后再生成图片。"
+            : auth.error.message,
+      },
+      { status: auth.error.status },
+    )
+  }
+
+  const body = await request.json().catch(() => null)
+  const input = normalizeInput(body)
+
+  if ("error" in input) {
+    return NextResponse.json(
+      {
+        code: "invalid_request",
+        message: input.error,
+      },
+      { status: 400 },
+    )
+  }
+
   const apiKey =
     cleanApiKey(process.env.VOLCENGINE_API_KEY) ||
     cleanApiKey(process.env.ARK_API_KEY)
@@ -76,16 +141,35 @@ export async function POST(request: Request) {
     )
   }
 
-  const body = await request.json().catch(() => null)
-  const input = normalizeInput(body)
+  let reservedGeneration: ReservedGenerationContext | null = null
 
-  if ("error" in input) {
+  try {
+    const reservation = await reserveGenerationCredit(auth.client, auth.user.id)
+
+    if (reservation.state === "insufficient") {
+      return NextResponse.json(
+        {
+          code: "insufficient_credits",
+          credits: reservation.credits,
+          message: "积分不足，升级后可解锁更多创作次数。",
+        },
+        { status: 402 },
+      )
+    }
+
+    reservedGeneration = {
+      client: auth.client,
+      credits: reservation.credits,
+      requestId: reservation.requestId,
+      userId: auth.user.id,
+    }
+  } catch {
     return NextResponse.json(
       {
-        code: "invalid_request",
-        message: input.error,
+        code: "credit_reservation_failed",
+        message: "暂时无法扣除创作积分，请稍后再试。",
       },
-      { status: 400 },
+      { status: 502 },
     )
   }
 
@@ -114,6 +198,11 @@ export async function POST(request: Request) {
       name: providerError?.name,
     })
 
+    await refundReservedGeneration(
+      reservedGeneration,
+      "provider_network_error",
+    )
+
     return NextResponse.json(
       {
         code: "provider_network_error",
@@ -127,6 +216,8 @@ export async function POST(request: Request) {
   const providerJson = await providerResponse.json().catch(() => null)
 
   if (!providerResponse.ok) {
+    await refundReservedGeneration(reservedGeneration, "provider_error")
+
     if (providerResponse.status === 401 || providerResponse.status === 403) {
       return NextResponse.json(
         {
@@ -150,6 +241,8 @@ export async function POST(request: Request) {
   const image = extractSeedreamImage(providerJson ?? {})
 
   if (!image) {
+    await refundReservedGeneration(reservedGeneration, "empty_generation")
+
     return NextResponse.json(
       {
         code: "empty_generation",
@@ -159,7 +252,37 @@ export async function POST(request: Request) {
     )
   }
 
+  let generationId: string | undefined
+
+  if (reservedGeneration) {
+    try {
+      generationId = await completeCloudGeneration({
+        client: reservedGeneration.client,
+        imageUrl: image.imageUrl,
+        input,
+        prompt: payload.prompt,
+        requestId: reservedGeneration.requestId,
+        userId: reservedGeneration.userId,
+      })
+    } catch {
+      await refundReservedGeneration(
+        reservedGeneration,
+        "history_persist_failed",
+      )
+
+      return NextResponse.json(
+        {
+          code: "history_persist_failed",
+          message: "图片已生成，但云端历史保存失败，请稍后重试。",
+        },
+        { status: 502 },
+      )
+    }
+  }
+
   return NextResponse.json({
+    credits: reservedGeneration?.credits,
+    generationId,
     ...image,
     model: SEEDREAM_MODEL,
     prompt: payload.prompt,

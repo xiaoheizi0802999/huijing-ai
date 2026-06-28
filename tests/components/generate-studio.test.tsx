@@ -2,18 +2,79 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, expect, it, vi } from "vitest"
 import { GenerateStudio } from "@/components/cinematic/generate-studio"
 
+const supabaseMock = vi.hoisted(() => ({
+  client: null as unknown,
+}))
+
+vi.mock("@/lib/supabase/client", () => ({
+  createSupabaseBrowserClient: () => supabaseMock.client,
+}))
+
+function mockSignedInStudio(
+  fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+    if (String(input).includes("/api/auth/session")) {
+      return Response.json({
+        credits: 5,
+        granted: 0,
+        user: {
+          email: "director@example.com",
+          id: "user-1",
+        },
+      })
+    }
+
+    return Response.json({
+      credits: 4,
+      generationId: "cloud-generation-1",
+      imageUrl: "https://example.com/final-frame.png",
+      prompt: "cinematic prompt",
+    })
+  }),
+) {
+  supabaseMock.client = {
+    auth: {
+      getSession: vi.fn(async () => ({
+        data: {
+          session: {
+            access_token: "token-1",
+            user: {
+              email: "director@example.com",
+              id: "user-1",
+            },
+          },
+        },
+      })),
+      onAuthStateChange: vi.fn(() => ({
+        data: {
+          subscription: {
+            unsubscribe: vi.fn(),
+          },
+        },
+      })),
+      signInWithOtp: vi.fn(),
+      signOut: vi.fn(),
+    },
+  }
+  vi.stubGlobal("fetch", fetchMock)
+
+  return fetchMock
+}
+
 afterEach(() => {
   cleanup()
+  supabaseMock.client = null
   vi.restoreAllMocks()
+  vi.unstubAllGlobals()
 })
 
-it("renders a Seedream creation studio that visually belongs to the cinematic system", () => {
+it("renders a signed-in Seedream creation studio that visually belongs to the cinematic system", async () => {
+  mockSignedInStudio()
   const { container } = render(<GenerateStudio />)
 
   expect(
     screen.getByRole("heading", { name: "像导演一样调度" }),
   ).toBeInTheDocument()
-  expect(screen.getByLabelText("主体描述")).toBeInTheDocument()
+  expect(await screen.findByLabelText("主体描述")).toBeInTheDocument()
   expect(screen.getByLabelText("图片类型")).toBeInTheDocument()
   expect(screen.getByLabelText("风格气质")).toBeInTheDocument()
   expect(screen.getByLabelText("画幅")).toBeInTheDocument()
@@ -28,16 +89,10 @@ it("renders a Seedream creation studio that visually belongs to the cinematic sy
 })
 
 it("submits the creative brief and renders the generated image", async () => {
-  const fetchMock = vi.fn(async () =>
-    Response.json({
-      imageUrl: "https://example.com/final-frame.png",
-      prompt: "cinematic prompt",
-    }),
-  )
-  vi.stubGlobal("fetch", fetchMock)
+  const fetchMock = mockSignedInStudio()
 
   render(<GenerateStudio />)
-  fireEvent.change(screen.getByLabelText("主体描述"), {
+  fireEvent.change(await screen.findByLabelText("主体描述"), {
     target: { value: "一位站在雨夜高楼边缘的未来城市导演" },
   })
   fireEvent.click(screen.getByRole("button", { name: "生成图片" }))
@@ -58,21 +113,31 @@ it("submits the creative brief and renders the generated image", async () => {
 })
 
 it("shows a cinematic inline error when the provider cannot generate", async () => {
-  vi.stubGlobal(
-    "fetch",
-    vi.fn(async () =>
-      Response.json(
+  mockSignedInStudio(
+    vi.fn(async (input: RequestInfo | URL) => {
+      if (String(input).includes("/api/auth/session")) {
+        return Response.json({
+          credits: 5,
+          granted: 0,
+          user: {
+            email: "director@example.com",
+            id: "user-1",
+          },
+        })
+      }
+
+      return Response.json(
         {
           code: "missing_api_key",
           message: "缺少 ARK_API_KEY，暂时无法连接 Doubao-Seedream-4.5。",
         },
         { status: 503 },
-      ),
-    ),
+      )
+    }),
   )
 
   render(<GenerateStudio />)
-  fireEvent.change(screen.getByLabelText("主体描述"), {
+  fireEvent.change(await screen.findByLabelText("主体描述"), {
     target: { value: "一组黑色香水瓶在银色冷光中排列" },
   })
   fireEvent.click(screen.getByRole("button", { name: "生成图片" }))

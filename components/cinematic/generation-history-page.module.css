@@ -106,7 +106,15 @@
   align-items: stretch;
 }
 
+.authStage {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.38fr) minmax(0, 0.62fr);
+  gap: clamp(18px, 2.8vw, 34px);
+  align-items: stretch;
+}
+
 .archivePanel,
+.authPanel,
 .previewPanel {
   position: relative;
   overflow: hidden;
@@ -127,6 +135,7 @@
 }
 
 .archivePanel::before,
+.authPanel::before,
 .previewPanel::before {
   content: "";
   position: absolute;
@@ -145,6 +154,14 @@
   grid-template-rows: auto 1fr;
   min-height: 560px;
   padding: clamp(18px, 2.2vw, 28px);
+}
+
+.authPanel {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  min-height: 560px;
+  padding: clamp(22px, 3vw, 34px);
 }
 
 .archiveHeader {
@@ -171,6 +188,109 @@
   font-size: 12px;
   font-weight: 400;
   letter-spacing: 0.12em;
+}
+
+.authForm {
+  display: grid;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background:
+    linear-gradient(120deg, rgba(185, 226, 248, 0.08), transparent 68%),
+    rgba(3, 4, 5, 0.46);
+  padding: 16px;
+}
+
+.authForm label {
+  display: grid;
+  gap: 8px;
+}
+
+.authForm span {
+  color: rgba(185, 226, 248, 0.78);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+}
+
+.authForm input,
+.authForm textarea {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0;
+  background: rgba(3, 4, 5, 0.62);
+  color: var(--color-ink);
+  font: inherit;
+  outline: 0;
+  padding: 0 12px;
+  transition:
+    border-color 240ms ease,
+    background 240ms ease,
+    box-shadow 240ms ease;
+}
+
+.authForm input {
+  height: 44px;
+}
+
+.authForm textarea {
+  min-height: 62px;
+  padding-block: 10px;
+  resize: vertical;
+}
+
+.authForm input:focus,
+.authForm textarea:focus {
+  border-color: rgba(185, 226, 248, 0.62);
+  background: rgba(3, 4, 5, 0.78);
+  box-shadow: 0 0 0 1px rgba(185, 226, 248, 0.12);
+}
+
+.authForm button {
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.06), transparent 70%),
+    rgba(3, 4, 5, 0.44);
+  color: rgba(242, 243, 241, 0.86);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  transition:
+    border-color 240ms ease,
+    background 240ms ease,
+    color 240ms ease,
+    transform 240ms ease;
+}
+
+.authForm button:hover,
+.authForm button:focus-visible {
+  border-color: rgba(185, 226, 248, 0.54);
+  background:
+    linear-gradient(120deg, rgba(185, 226, 248, 0.11), transparent 70%),
+    rgba(10, 13, 16, 0.72);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.authHint {
+  color: rgba(143, 149, 157, 0.92);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.authNotice,
+.authPanel > p {
+  margin: 0;
+  color: #8f959d;
+  font-size: 13px;
+  line-height: 1.72;
+}
+
+.authNotice {
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background: rgba(3, 4, 5, 0.38);
+  padding: 14px;
 }
 
 .reel {
@@ -525,6 +645,7 @@
   }
 
   .stage,
+  .authStage,
   .previewPanel {
     grid-template-columns: 1fr;
   }

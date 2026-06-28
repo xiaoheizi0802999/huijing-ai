@@ -9,7 +9,3 @@ coverage/
 *.log
 .superpowers/
 .worktrees/
-
-.vercel
-.env*
-!.env.example

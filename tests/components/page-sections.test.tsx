@@ -36,6 +36,11 @@ it("keeps all six landing sections in cinematic order", () => {
 it("keeps homepage creation links pointed at the generate route", () => {
   render(<Home />)
 
+  expect(screen.getByRole("link", { name: "登录 / 进入创作" })).toHaveAttribute(
+    "href",
+    "/generate",
+  )
+
   const generationLinks = screen.getAllByRole("link", {
     name: /开始创作|开始生成你的第一张作品/,
   })
@@ -87,6 +92,7 @@ it("renders the Seedream generation studio route without changing the homepage",
       name: "像导演一样调度",
     }),
   ).toBeInTheDocument()
-  expect(screen.getByLabelText("主体描述")).toBeInTheDocument()
+  expect(screen.getByText("登录后才可以使用生图与云端历史。")).toBeInTheDocument()
+  expect(screen.queryByLabelText("主体描述")).not.toBeInTheDocument()
   expect(screen.getByRole("link", { name: "返回首页" })).toHaveAttribute("href", "/")
 })

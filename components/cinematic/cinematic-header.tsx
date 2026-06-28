@@ -135,7 +135,7 @@ export function CinematicHeader() {
             className="cinematic-header__cta"
             href="/generate"
           >
-            开始创作
+            登录 / 进入创作
           </Link>
         </div>
 
@@ -201,7 +201,7 @@ export function CinematicHeader() {
               href="/generate"
               onClick={closeMenu}
             >
-              开始创作
+              登录 / 进入创作
             </Link>
           </nav>
         </div>

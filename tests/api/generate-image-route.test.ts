@@ -2,8 +2,27 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 const originalArkApiKey = process.env.ARK_API_KEY
 const originalVolcengineApiKey = process.env.VOLCENGINE_API_KEY
+const supabaseServerMock = vi.hoisted(() => ({
+  authenticateSupabaseRequest: vi.fn(),
+  completeCloudGeneration: vi.fn(),
+  refundGenerationCredit: vi.fn(),
+  reserveGenerationCredit: vi.fn(),
+}))
+
+vi.mock("@/lib/supabase/server", () => supabaseServerMock)
 
 function createRequest(body: unknown) {
+  return new Request("http://localhost/api/generate-image", {
+    body: JSON.stringify(body),
+    headers: {
+      authorization: "Bearer token-1",
+      "content-type": "application/json",
+    },
+    method: "POST",
+  })
+}
+
+function createGuestRequest(body: unknown) {
   return new Request("http://localhost/api/generate-image", {
     body: JSON.stringify(body),
     headers: {
@@ -19,12 +38,65 @@ describe("/api/generate-image", () => {
     vi.restoreAllMocks()
     process.env.ARK_API_KEY = "test-ark-key"
     delete process.env.VOLCENGINE_API_KEY
+    supabaseServerMock.authenticateSupabaseRequest.mockReset()
+    supabaseServerMock.completeCloudGeneration.mockReset()
+    supabaseServerMock.refundGenerationCredit.mockReset()
+    supabaseServerMock.reserveGenerationCredit.mockReset()
+    supabaseServerMock.authenticateSupabaseRequest.mockImplementation(
+      async (request: Request) =>
+        request.headers.get("authorization")
+          ? {
+              client: {},
+              token: "token-1",
+              user: {
+                email: "director@example.com",
+                id: "user-1",
+              },
+            }
+          : {
+              error: {
+                code: "missing_auth_token",
+                message: "请先登录后再继续创作。",
+                status: 401,
+              },
+            },
+    )
+    supabaseServerMock.completeCloudGeneration.mockResolvedValue(
+      "cloud-generation-1",
+    )
+    supabaseServerMock.refundGenerationCredit.mockResolvedValue(5)
+    supabaseServerMock.reserveGenerationCredit.mockResolvedValue({
+      credits: 4,
+      requestId: "request-1",
+      state: "reserved",
+    })
   })
 
   afterEach(() => {
     process.env.ARK_API_KEY = originalArkApiKey
     process.env.VOLCENGINE_API_KEY = originalVolcengineApiKey
     vi.restoreAllMocks()
+    vi.unstubAllGlobals()
+  })
+
+  it("requires login before image generation starts", async () => {
+    const fetchMock = vi.fn()
+    vi.stubGlobal("fetch", fetchMock)
+    const { POST } = await import("@/app/api/generate-image/route")
+
+    const response = await POST(
+      createGuestRequest({
+        subject: "黑色摄影棚中的银色概念跑车",
+      }),
+    )
+    const body = await response.json()
+
+    expect(response.status).toBe(401)
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(body).toEqual({
+      code: "missing_auth_token",
+      message: "请先登录后再生成图片。",
+    })
   })
 
   it("returns a polished missing-key error when ARK_API_KEY is absent", async () => {
@@ -162,6 +234,171 @@ describe("/api/generate-image", () => {
       imageUrl: "https://example.com/generated.png",
       model: "doubao-seedream-4-5-251128",
       provider: "Doubao-Seedream-4.5",
+    })
+  })
+
+  it("reserves one credit and stores cloud history for signed-in generations", async () => {
+    const reserveGenerationCredit = vi.fn(async () => ({
+      credits: 4,
+      requestId: "request-1",
+      state: "reserved",
+    }))
+    const completeCloudGeneration = vi.fn(async () => "cloud-generation-1")
+    const refundGenerationCredit = vi.fn()
+    supabaseServerMock.authenticateSupabaseRequest.mockResolvedValue({
+        client: { service: true },
+        token: "token-1",
+        user: {
+          email: "director@example.com",
+          id: "user-1",
+        },
+      })
+    supabaseServerMock.completeCloudGeneration.mockImplementation(
+      completeCloudGeneration,
+    )
+    supabaseServerMock.refundGenerationCredit.mockImplementation(
+      refundGenerationCredit,
+    )
+    supabaseServerMock.reserveGenerationCredit.mockImplementation(
+      reserveGenerationCredit,
+    )
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        Response.json({
+          data: [{ url: "https://example.com/cloud-generated.png" }],
+        }),
+      ),
+    )
+    const { POST } = await import("@/app/api/generate-image/route")
+
+    const response = await POST(
+      new Request("http://localhost/api/generate-image", {
+        body: JSON.stringify({
+          aspectRatio: "16:9",
+          imageType: "电影海报",
+          mood: "黑色电影",
+          quality: "2K",
+          subject: "黑色摄影棚中的银色概念跑车",
+        }),
+        headers: {
+          authorization: "Bearer token-1",
+          "content-type": "application/json",
+        },
+        method: "POST",
+      }),
+    )
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(reserveGenerationCredit).toHaveBeenCalledWith(
+      { service: true },
+      "user-1",
+    )
+    expect(completeCloudGeneration).toHaveBeenCalledWith(
+      expect.objectContaining({
+        client: { service: true },
+        imageUrl: "https://example.com/cloud-generated.png",
+        requestId: "request-1",
+        userId: "user-1",
+      }),
+    )
+    expect(refundGenerationCredit).not.toHaveBeenCalled()
+    expect(body).toMatchObject({
+      credits: 4,
+      generationId: "cloud-generation-1",
+      imageUrl: "https://example.com/cloud-generated.png",
+    })
+  })
+
+  it("does not call the image provider when signed-in users have no credits", async () => {
+    supabaseServerMock.authenticateSupabaseRequest.mockResolvedValue({
+        client: {},
+        token: "token-1",
+        user: {
+          email: "director@example.com",
+          id: "user-1",
+        },
+      })
+    supabaseServerMock.completeCloudGeneration.mockReset()
+    supabaseServerMock.refundGenerationCredit.mockReset()
+    supabaseServerMock.reserveGenerationCredit.mockResolvedValue({
+      credits: 0,
+      state: "insufficient",
+    })
+    const fetchMock = vi.fn()
+    vi.stubGlobal("fetch", fetchMock)
+    const { POST } = await import("@/app/api/generate-image/route")
+
+    const response = await POST(
+      new Request("http://localhost/api/generate-image", {
+        body: JSON.stringify({
+          subject: "黑色摄影棚中的银色概念跑车",
+        }),
+        headers: {
+          authorization: "Bearer token-1",
+          "content-type": "application/json",
+        },
+        method: "POST",
+      }),
+    )
+    const body = await response.json()
+
+    expect(response.status).toBe(402)
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(body).toEqual({
+      code: "insufficient_credits",
+      credits: 0,
+      message: "积分不足，升级后可解锁更多创作次数。",
+    })
+  })
+
+  it("refunds the reserved credit when the provider request fails", async () => {
+    const refundGenerationCredit = vi.fn(async () => 5)
+    supabaseServerMock.authenticateSupabaseRequest.mockResolvedValue({
+        client: {},
+        token: "token-1",
+        user: {
+          email: "director@example.com",
+          id: "user-1",
+        },
+      })
+    supabaseServerMock.completeCloudGeneration.mockReset()
+    supabaseServerMock.refundGenerationCredit.mockImplementation(
+      refundGenerationCredit,
+    )
+    supabaseServerMock.reserveGenerationCredit.mockResolvedValue({
+      credits: 4,
+      requestId: "request-1",
+      state: "reserved",
+    })
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new TypeError("fetch failed")
+      }),
+    )
+    const { POST } = await import("@/app/api/generate-image/route")
+
+    const response = await POST(
+      new Request("http://localhost/api/generate-image", {
+        body: JSON.stringify({
+          subject: "黑色摄影棚中的银色概念跑车",
+        }),
+        headers: {
+          authorization: "Bearer token-1",
+          "content-type": "application/json",
+        },
+        method: "POST",
+      }),
+    )
+
+    expect(response.status).toBe(502)
+    expect(refundGenerationCredit).toHaveBeenCalledWith({
+      client: {},
+      errorCode: "provider_network_error",
+      requestId: "request-1",
+      userId: "user-1",
     })
   })
 
