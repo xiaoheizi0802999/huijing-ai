@@ -396,7 +396,7 @@ it("renders a cinematic email login panel for guests", async () => {
     expect(signInWithOtp).toHaveBeenCalledWith({
       email: "director@example.com",
       options: {
-        emailRedirectTo: "http://localhost:3000/generate",
+        emailRedirectTo: "https://huijing-ai.vercel.app/generate",
       },
     })
   })

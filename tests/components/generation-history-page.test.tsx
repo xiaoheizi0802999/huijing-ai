@@ -175,6 +175,43 @@ it("shows immediate feedback while sending a history login link", async () => {
   expect(signInWithOtp).toHaveBeenCalled()
 })
 
+it("sends history login links to a mobile-reachable redirect URL", async () => {
+  const signInWithOtp = vi.fn(async () => ({ error: null }))
+  supabaseMock.client = {
+    auth: {
+      getSession: vi.fn(async () => ({
+        data: {
+          session: null,
+        },
+      })),
+      onAuthStateChange: vi.fn(() => ({
+        data: {
+          subscription: {
+            unsubscribe: vi.fn(),
+          },
+        },
+      })),
+      signInWithOtp,
+    },
+  }
+
+  render(<GenerationHistoryPage />)
+
+  fireEvent.change(await screen.findByPlaceholderText("director@example.com"), {
+    target: { value: "director@example.com" },
+  })
+  fireEvent.click(screen.getByRole("button", { name: "发送登录链接" }))
+
+  await waitFor(() => {
+    expect(signInWithOtp).toHaveBeenCalledWith({
+      email: "director@example.com",
+      options: {
+        emailRedirectTo: "https://huijing-ai.vercel.app/generate/history",
+      },
+    })
+  })
+})
+
 it("explains Supabase email rate limits on the history login form", async () => {
   const signInWithOtp = vi.fn(async () => ({
     error: {

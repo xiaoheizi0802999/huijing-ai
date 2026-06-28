@@ -18,6 +18,7 @@ import {
   formatSupabaseAuthError,
   isSupabaseEmailRateLimit,
 } from "@/lib/supabase/auth-errors"
+import { getSupabaseEmailRedirectTo } from "@/lib/supabase/auth-redirect"
 import { parseSupabaseAuthUrl } from "@/lib/supabase/auth-url"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 import styles from "./generation-history-page.module.css"
@@ -209,7 +210,7 @@ export function GenerationHistoryPage() {
       const { error } = await supabaseClient.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/generate/history`,
+          emailRedirectTo: getSupabaseEmailRedirectTo("/generate/history"),
         },
       })
 
